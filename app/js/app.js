@@ -3,6 +3,7 @@
 var map,
 	view,
 	marker,
+	infoWindow,
 	mapLoaded = false,
 	startPoint = {lat:37.773972, lng: -122.431297};
 
@@ -58,6 +59,11 @@ var ViewModel = function(){
 				return;
 			}
 
+			// Close open infoWindows
+			if(infoWindow){
+				infoWindow.close();
+			}
+
 			// Clear out the old marker
 			if(marker){
 				marker.setMap(null);
@@ -84,6 +90,7 @@ var ViewModel = function(){
 
 				google.maps.event.addListener(marker, 'click', function() {
 					console.log('click');
+					self.addInfoWindow(place.name, place.formatted_address);
 				});
 
 				if (place.geometry.viewport) {
@@ -98,6 +105,26 @@ var ViewModel = function(){
 			});
 
 		});
+	};
+
+	self.addInfoWindow = function(name, address){
+
+		var contents = '<b>'+name+'</b><br>'+address;
+
+		//var contentStringYelp = '<b>'+where+'</b>'+'<br>Category: '+what+'<br>Yelp Rating: '+rating
+		//+'<br><a href="'+url+'" target="_blank">Go to Yelp Reviews</a><br>Walk Time: '+distance+' about '+duration
+		//+'<br><button type="button" class="btn btn-default center-block" onclick="view.showDetailedDirections()">Show Directions!</button>';
+		
+		if(infoWindow){
+			infoWindow.close();
+		}
+
+		infoWindow = new google.maps.InfoWindow({
+			content: contents
+		});
+
+		infoWindow.open(map, marker);
+
 	};
 };
 
