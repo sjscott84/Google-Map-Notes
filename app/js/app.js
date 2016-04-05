@@ -2,6 +2,7 @@
 
 var map,
 	view,
+	mapLoaded = false,
 	startPoint = {lat:37.773972, lng: -122.431297};
 
 /**
@@ -13,6 +14,7 @@ function initMap() {
 		zoom: 12
 	});
 	view.addSearch();
+	mapLoaded = true;
 }
 
 /**
@@ -84,9 +86,12 @@ var ViewModel = function(){
 				} else {
 					bounds.extend(place.geometry.location);
 				}
+				
+				map.setCenter(place.geometry.location);
+				map.fitBounds(bounds);
 			});
+
 		});
-		//map.fitBounds(bounds);
 	};
 };
 
