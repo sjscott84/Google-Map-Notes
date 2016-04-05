@@ -2,6 +2,7 @@
 
 var map,
 	view,
+	marker,
 	mapLoaded = false,
 	startPoint = {lat:37.773972, lng: -122.431297};
 
@@ -24,9 +25,12 @@ function onLoadError(){
 	alert("Google is currently unavaliable, please try again later");
 }
 
+var Place = function (){
+	var self = this;
+}
+
 var ViewModel = function(){
 	var self = this,
-		markers = [],
 		searchBox;
 
 	self.addSearch = function (){
@@ -54,12 +58,10 @@ var ViewModel = function(){
 				return;
 			}
 
-			// Clear out the old markers.
-			markers.forEach(function(marker) {
+			// Clear out the old marker
+			if(marker){
 				marker.setMap(null);
-			});
-
-			markers = [];
+			}
 
 			// For each place, get the icon, name and location.
 			var bounds = new google.maps.LatLngBounds();
@@ -73,12 +75,16 @@ var ViewModel = function(){
 				};
 
 			// Create a marker for each place.
-				markers.push(new google.maps.Marker({
+				marker = new google.maps.Marker({
 					map: map,
 					icon: icon,
 					title: place.name,
 					position: place.geometry.location
-				}));
+				});
+
+				google.maps.event.addListener(marker, 'click', function() {
+					console.log('click');
+				});
 
 				if (place.geometry.viewport) {
 				// Only geocodes have viewport.
@@ -86,7 +92,7 @@ var ViewModel = function(){
 				} else {
 					bounds.extend(place.geometry.location);
 				}
-				
+
 				map.setCenter(place.geometry.location);
 				map.fitBounds(bounds);
 			});
