@@ -109,7 +109,7 @@ var ViewModel = function(){
 
 	self.addInfoWindow = function(name, address){
 
-		var contents = '<b>'+name+'</b><br>'+address;
+		var contents = '<b>'+name+'</b><br>'+address+'<br><span><button type="button" onclick="view.saveThisPlace()">Save Place</button><button type="button" onclick="view.removeThisPlace()">Remove Place</button></span>';
 
 		//var contentStringYelp = '<b>'+where+'</b>'+'<br>Category: '+what+'<br>Yelp Rating: '+rating
 		//+'<br><a href="'+url+'" target="_blank">Go to Yelp Reviews</a><br>Walk Time: '+distance+' about '+duration
@@ -126,6 +126,15 @@ var ViewModel = function(){
 		infoWindow.open(map, marker);
 
 	};
+
+	self.saveThisPlace = function(){
+		console.log('Saved');
+	};
+
+	self.removeThisPlace = function(){
+		infoWindow.close();
+		marker.setMap(null);
+	}
 };
 
 view = new ViewModel();
