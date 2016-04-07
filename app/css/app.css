@@ -38,6 +38,19 @@ html, body {
 	font-family: Roboto;
 }
 
+#inputBox {
+	height: 60%;
+	width: 50%;
+	margin-left: 25%;
+	margin-top: 10%;
+	background-color: white;
+	border-style: solid;
+}
+
+#notes {
+	width: 90%;
+}
+
 #type-selector {
 	color: #fff;
 	background-color: #4d90fe;

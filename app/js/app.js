@@ -5,7 +5,9 @@ var map,
 	marker,
 	infoWindow,
 	mapLoaded = false,
+	placeObject = {},
 	startPoint = {lat:37.773972, lng: -122.431297};
+	//jsonTest = require("./places.json");
 
 /**
  * Add google maps to screen
@@ -16,6 +18,7 @@ function initMap() {
 		zoom: 12
 	});
 	view.addSearch();
+	map.controls[google.maps.ControlPosition.LEFT_TOP].push(inputBox);
 	mapLoaded = true;
 }
 
@@ -33,6 +36,12 @@ var Place = function (){
 var ViewModel = function(){
 	var self = this,
 		searchBox;
+
+	self.placeNote = ko.observable("");
+	self.showOverlay = ko.observable(false);
+	self.placeName = ko.observable("");
+	self.placeGroup = ko.observable("");
+	self.placeType = ko.observable("");
 
 	self.addSearch = function (){
 		// Create the search box and link it to the UI element.
@@ -94,6 +103,7 @@ var ViewModel = function(){
 
 				map.setCenter(place.geometry.location);
 				map.fitBounds(bounds);
+				placeObject = {"group": undefined, "name": place.name, "address":place.formatted_address, "location":place.geometry.location, "type": undefined, "notes": undefined};
 			});
 
 		});
@@ -103,10 +113,6 @@ var ViewModel = function(){
 
 		var contents = '<b>'+name+'</b><br>'+address+'<br><span><button type="button" onclick="view.saveThisPlace()">Save Place</button><button type="button" onclick="view.removeThisPlace()">Remove Place</button></span>';
 
-		//var contentStringYelp = '<b>'+where+'</b>'+'<br>Category: '+what+'<br>Yelp Rating: '+rating
-		//+'<br><a href="'+url+'" target="_blank">Go to Yelp Reviews</a><br>Walk Time: '+distance+' about '+duration
-		//+'<br><button type="button" class="btn btn-default center-block" onclick="view.showDetailedDirections()">Show Directions!</button>';
-		
 		if(infoWindow){
 			infoWindow.close();
 		}
@@ -120,13 +126,23 @@ var ViewModel = function(){
 	};
 
 	self.saveThisPlace = function(){
-		console.log('Saved');
+		infoWindow.close();
+		self.showOverlay(true);
+		self.placeName(marker.title);
 	};
 
 	self.removeThisPlace = function(){
 		infoWindow.close();
 		marker.setMap(null);
 	}
+
+	self.savePlace = function(){
+		placeObject.group = self.placeGroup();
+		placeObject.type = self.placeType();
+		placeObject.notes = self.placeNote();
+		console.log(placeObject);
+	}
 };
 
 view = new ViewModel();
+ko.applyBindings(view);
