@@ -25,7 +25,10 @@
 		<p data-bind="text: placeGroup"></p>
 		<p data-bind="text: placeType"></p>
 		<p data-bind="text: placeNote"></p>
-		<button type="button" onclick="view.savePlace()"></button>
+		<span>
+		<button type="button" onclick="view.savePlace()">Save</button>
+		<button type="button" onclick="view.dontSavePlace()">Remove</button>
+	</span>
 	</div>
 
 	<!--build:js js/main.min.js -->

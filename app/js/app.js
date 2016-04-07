@@ -142,6 +142,12 @@ var ViewModel = function(){
 		placeObject.notes = self.placeNote();
 		console.log(placeObject);
 	}
+
+	self.dontSavePlace = function(){
+		placeObject = {};
+		self.showOverlay(false);
+		self.removeThisPlace();
+	}
 };
 
 view = new ViewModel();
