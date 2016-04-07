@@ -4,6 +4,7 @@ var map,
 	view,
 	marker,
 	infoWindow,
+	testData,
 	mapLoaded = false,
 	placeObject = {},
 	startPoint = {lat:37.773972, lng: -122.431297};
@@ -141,12 +142,24 @@ var ViewModel = function(){
 		placeObject.type = self.placeType();
 		placeObject.notes = self.placeNote();
 		console.log(placeObject);
+		self.readFile();
 	}
 
 	self.dontSavePlace = function(){
 		placeObject = {};
 		self.showOverlay(false);
 		self.removeThisPlace();
+	}
+
+	self.readFile = function(){
+		$.ajax({
+			type:'GET',
+			url: 'http://localhost:3000/readFile',
+		}).done(function(data){
+			//console.log(data);
+			testData = data;
+			console.log("this is you data: "+testData);
+		})
 	}
 };
 
