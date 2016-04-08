@@ -6,7 +6,7 @@ var cors = require('cors');
 var app = express();
 var bodyParser = require('body-parser');
 //var parseUrlencoded = bodyParser.urlencoded({extended: false});
-var jsonParser = bodyParser.json();
+app.use(bodyParser.json());
 
 app.use(cors());
 app.options('*', cors());
@@ -23,13 +23,13 @@ app.get('/readFile', function(request, response){
 	});
 });
 
-app.post('/writeFile', jsonParser, function(request, response){
+app.post('/writeFile', function(request, response){
 
 	fs.stat(file, function(err, stats){
 		if(err){
 			console.log(err);
 		}else{
-			fs.appendFile(file, request.body, function(err){
+			fs.writeFile(file, JSON.stringify(request.body), function(err){
 				if(err){
 					console.log(err);
 				}else{

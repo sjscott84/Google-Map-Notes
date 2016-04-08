@@ -142,7 +142,7 @@ var ViewModel = function(){
 		placeObject.type = self.placeType();
 		placeObject.notes = self.placeNote();
 		console.log(placeObject);
-		self.writeFile();
+		self.readFile();
 	}
 
 	self.dontSavePlace = function(){
@@ -155,9 +155,9 @@ var ViewModel = function(){
 		$.ajax({
 			type: 'POST',
 			url: 'http://localhost:3000/writeFile',
-			data: JSON.stringify({Place: placeObject}),
-			contentType: "application/json; charset=utf-8",
 			dataType: "json",
+			data: JSON.stringify({place: placeObject}),
+			contentType: "application/json; charset=utf-8",
 			success: function(data){
 				var testData = data;
 				console.log(data);
