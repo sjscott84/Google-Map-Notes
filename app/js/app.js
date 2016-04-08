@@ -6,7 +6,7 @@ var map,
 	infoWindow,
 	testData,
 	mapLoaded = false,
-	placeObject = {},
+	placeObject = [{}],
 	startPoint = {lat:37.773972, lng: -122.431297};
 	//jsonTest = require("./places.json");
 
@@ -142,13 +142,30 @@ var ViewModel = function(){
 		placeObject.type = self.placeType();
 		placeObject.notes = self.placeNote();
 		console.log(placeObject);
-		self.readFile();
+		self.writeFile();
 	}
 
 	self.dontSavePlace = function(){
 		placeObject = {};
 		self.showOverlay(false);
 		self.removeThisPlace();
+	}
+
+	self.writeFile = function(){
+		$.ajax({
+			type: 'POST',
+			url: 'http://localhost:3000/writeFile',
+			data: JSON.stringify({Place: placeObject}),
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			success: function(data){
+				var testData = data;
+				console.log(data);
+			},
+			failure: function(errMsg) {
+				alert(errMsg);
+			}
+		})
 	}
 
 	self.readFile = function(){
