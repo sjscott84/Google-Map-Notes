@@ -32,9 +32,24 @@ function onLoadError(){
 	alert("Google is currently unavaliable, please try again later");
 }
 
-var Place = function (){
+var Place = function (name, position, lat, lng){
 	var self = this;
-}
+	self.map = map;
+	self.name = name;
+	self.lat = lat;
+	self.lng = lng;
+	self.position = {"lat":self.lat, "lng":self.lng};
+	self.marker = new google.maps.Marker({
+		map: map,
+		title: name,
+		position: self.position,
+		zoomOnClick: false,
+	});
+	google.maps.event.addListener(this.marker, 'click', function() {
+		view.addInfoWindow();
+		//view.setPlace(self);
+	});
+};
 
 var ViewModel = function(){
 	var self = this,
@@ -47,6 +62,7 @@ var ViewModel = function(){
 	self.placeGroup = ko.observable("");
 	self.placeType = ko.observable("");
 	self.getGroup = ko.observable("");
+	self.listView = ko.observableArray([]);
 
 	self.addSearch = function (){
 		// Create the search box and link it to the UI element.
@@ -108,7 +124,7 @@ var ViewModel = function(){
 
 				map.setCenter(place.geometry.location);
 				map.fitBounds(bounds);
-				placeObject = {"group": undefined, "name": place.name, "address":place.formatted_address, "location":place.geometry.location, "type": undefined, "notes": undefined};
+				placeObject = {"group": undefined, "name": place.name, "address":place.formatted_address, "location":place.geometry.location, "latitude":place.geometry.location.lat(), "longitude":place.geometry.location.lng(), "type": undefined, "notes": undefined};
 			});
 
 		});
@@ -148,6 +164,7 @@ var ViewModel = function(){
 		//console.log(placeObject);
 		self.writeFile();
 		self.showOverlay(false);
+		marker.setMap(null);
 	};
 
 	self.dontSavePlace = function(){
@@ -173,7 +190,7 @@ var ViewModel = function(){
 		})
 	};
 
-	self.readFile = function(group){
+	self.readFile = function(group, callback){
 		var data = {"group" : group};
 		$.ajax({
 			type:'GET',
@@ -181,8 +198,9 @@ var ViewModel = function(){
 			data: data,
 		}).done(function(data){
 			//console.log(data);
-			testData = data;
-			console.log("this is you data: "+testData);
+			//testData = data;
+			//console.log("this is you data: "+testData);
+			callback(JSON.parse(data));
 		})
 	};
 
@@ -191,8 +209,13 @@ var ViewModel = function(){
 	};
 
 	self.fetchPlaceDetails = function(){
-		console.log("click");
-		self.readFile(self.getGroup());
+		self.showSavedOverlay(false);
+		self.readFile(self.getGroup(), function(data){
+			data.forEach(function(value){
+				self.listView.push(new Place(value.name, value.position, value.latitude, value.longitude));
+			})
+		});
+
 	};
 };
 
