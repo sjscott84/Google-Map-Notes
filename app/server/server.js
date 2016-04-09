@@ -5,7 +5,7 @@ var express = require('express');
 var cors = require('cors');
 var app = express();
 var bodyParser = require('body-parser');
-var parseJson;
+
 //var parseUrlencoded = bodyParser.urlencoded({extended: false});
 app.use(bodyParser.json());
 
@@ -13,13 +13,21 @@ app.use(cors());
 app.options('*', cors());
 
 app.get('/readFile', function(request, response){
-	//response.send("Connected");
+	var group = request.query.group;
+	var returnedPlaces = [];
 
 	fs.readFile(file, 'utf8', function(err, data){
 		if(err){
 			console.log(err);
 		}else{
-			response.send(data);
+			var parsedData = JSON.parse(data);
+			console.log(parsedData);
+			for(var i = 0; i<parsedData.places.length; i++){
+				if(parsedData.places[i]["group"] === group){
+					returnedPlaces.push(parsedData.places[i]);
+				}
+			}
+			response.send(JSON.stringify(returnedPlaces));
 		}
 	});
 });
@@ -34,7 +42,7 @@ app.post('/writeFile', function(request, response){
 				if(err){
 					console.log(err);
 				}else{
-					parseJson = JSON.parse(data);
+					var parseJson = JSON.parse(data);
 					parseJson.places.push(request.body);
 
 					fs.writeFile(file, JSON.stringify(parseJson), function(err){

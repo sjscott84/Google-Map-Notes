@@ -38,7 +38,7 @@ html, body {
 	font-family: Roboto;
 }
 
-#inputBox {
+#inputBox, #getSaved {
 	height: 60%;
 	width: 50%;
 	margin-left: 25%;

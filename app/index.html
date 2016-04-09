@@ -14,14 +14,16 @@
 
 	<div id="map"></div>
 
+	<button id="seeSavedPlaces" type="button" onclick="view.loadSavedPlaces()">See saved places</button>
+
 	<div id="inputBox" data-bind="visible: showOverlay">
 		<b data-bind="text: placeName"></b>
 		<p>Group: </p>
-		<input id="notes" type="text" data-bind="textInput: placeGroup">
+		<input class="notes" type="text" data-bind="textInput: placeGroup">
 		<p>Type: </p>
-		<input id="notes" type="text" data-bind="textInput: placeType">
+		<input class="notes" type="text" data-bind="textInput: placeType">
 		<p>Notes: </p>
-		<input id="notes" type="text" data-bind="textInput: placeNote">
+		<input class="notes" type="text" data-bind="textInput: placeNote">
 		<p data-bind="text: placeGroup"></p>
 		<p data-bind="text: placeType"></p>
 		<p data-bind="text: placeNote"></p>
@@ -29,6 +31,12 @@
 		<button type="button" onclick="view.savePlace()">Save</button>
 		<button type="button" onclick="view.dontSavePlace()">Remove</button>
 	</span>
+	</div>
+
+	<div id="getSaved" data-bind="visible: showSavedOverlay">
+		<p>Which group would you like to see?</p>
+		<input class="notes" type="text" data-bind="textInput: getGroup">
+		<button type="button" onclick="view.fetchPlaceDetails()">Get <span data-bind="text: getGroup"></span> Places</button>
 	</div>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>

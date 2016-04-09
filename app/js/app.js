@@ -20,6 +20,8 @@ function initMap() {
 	});
 	view.addSearch();
 	map.controls[google.maps.ControlPosition.LEFT_TOP].push(inputBox);
+	map.controls[google.maps.ControlPosition.LEFT_TOP].push(getSaved);
+	map.controls[google.maps.ControlPosition.TOP_LEFT].push(seeSavedPlaces);
 	mapLoaded = true;
 }
 
@@ -40,9 +42,11 @@ var ViewModel = function(){
 
 	self.placeNote = ko.observable("");
 	self.showOverlay = ko.observable(false);
+	self.showSavedOverlay = ko.observable(false);
 	self.placeName = ko.observable("");
 	self.placeGroup = ko.observable("");
 	self.placeType = ko.observable("");
+	self.getGroup = ko.observable("");
 
 	self.addSearch = function (){
 		// Create the search box and link it to the UI element.
@@ -135,21 +139,22 @@ var ViewModel = function(){
 	self.removeThisPlace = function(){
 		infoWindow.close();
 		marker.setMap(null);
-	}
+	};
 
 	self.savePlace = function(){
 		placeObject.group = self.placeGroup();
 		placeObject.type = self.placeType();
 		placeObject.notes = self.placeNote();
-		console.log(placeObject);
+		//console.log(placeObject);
 		self.writeFile();
-	}
+		self.showOverlay(false);
+	};
 
 	self.dontSavePlace = function(){
 		placeObject = {};
 		self.showOverlay(false);
 		self.removeThisPlace();
-	}
+	};
 
 	self.writeFile = function(){
 		$.ajax({
@@ -166,18 +171,29 @@ var ViewModel = function(){
 				alert(errMsg);
 			}
 		})
-	}
+	};
 
-	self.readFile = function(){
+	self.readFile = function(group){
+		var data = {"group" : group};
 		$.ajax({
 			type:'GET',
 			url: 'http://localhost:3000/readFile',
+			data: data,
 		}).done(function(data){
 			//console.log(data);
 			testData = data;
 			console.log("this is you data: "+testData);
 		})
-	}
+	};
+
+	self.loadSavedPlaces = function(){
+		self.showSavedOverlay(true);
+	};
+
+	self.fetchPlaceDetails = function(){
+		console.log("click");
+		self.readFile(self.getGroup());
+	};
 };
 
 view = new ViewModel();
