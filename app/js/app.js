@@ -32,12 +32,15 @@ function onLoadError(){
 	alert("Google is currently unavaliable, please try again later");
 }
 
-var Place = function (name, position, lat, lng){
+var Place = function (name, position, lat, lng, type, note, address){
 	var self = this;
 	self.map = map;
 	self.name = name;
 	self.lat = lat;
 	self.lng = lng;
+	self.type = type;
+	self.note = note;
+	self.address = address;
 	self.position = {"lat":self.lat, "lng":self.lng};
 	self.marker = new google.maps.Marker({
 		map: map,
@@ -46,7 +49,7 @@ var Place = function (name, position, lat, lng){
 		zoomOnClick: false,
 	});
 	google.maps.event.addListener(this.marker, 'click', function() {
-		view.addInfoWindow();
+		view.addInfoWindow(self.name, self.address, self.marker, self.type, self.note);
 		//view.setPlace(self);
 	});
 };
@@ -112,7 +115,7 @@ var ViewModel = function(){
 
 				google.maps.event.addListener(marker, 'click', function() {
 					console.log('click');
-					self.addInfoWindow(place.name, place.formatted_address);
+					self.addInfoWindow(place.name, place.formatted_address, marker);
 				});
 
 				if (place.geometry.viewport) {
@@ -130,9 +133,21 @@ var ViewModel = function(){
 		});
 	};
 
-	self.addInfoWindow = function(name, address){
+	self.addInfoWindow = function(name, address, marker, type, note){
 
-		var contents = '<b>'+name+'</b><br>'+address+'<br><span><button type="button" onclick="view.saveThisPlace()">Save Place</button><button type="button" onclick="view.removeThisPlace()">Remove Place</button></span>';
+		var nameExists = false
+
+		view.listView().forEach(function(place){
+			if(place.name === name){
+			var contents = '<b>'+name+'</b><br>'+address+'<br><b>What: </b>'+type+'<br><b>Notes: </b>'+note;
+				nameExists = true;
+			}
+		})
+
+		if(!nameExists){
+			var contents = '<b>'+name+'</b><br>'+address+'<br><span><button type="button" onclick="view.saveThisPlace()">Save Place</button><button type="button" onclick="view.removeThisPlace()">Remove Place</button></span>';
+		
+		}
 
 		if(infoWindow){
 			infoWindow.close();
@@ -143,7 +158,6 @@ var ViewModel = function(){
 		});
 
 		infoWindow.open(map, marker);
-
 	};
 
 	self.saveThisPlace = function(){
@@ -179,14 +193,14 @@ var ViewModel = function(){
 			url: 'http://localhost:3000/writeFile',
 			dataType: "json",
 			data: JSON.stringify(placeObject),
-			contentType: "application/json; charset=utf-8",
-			success: function(data){
-				var testData = data;
-				console.log(data);
-			},
-			failure: function(errMsg) {
-				alert(errMsg);
-			}
+			contentType: "application/json; charset=utf-8"
+		})
+		.done(function(data){
+			//var testData = data;
+			console.log("Successfully saved");
+		})
+		.fail(function(errMsg) {
+			console.log(errMsg);
 		})
 	};
 
@@ -196,26 +210,38 @@ var ViewModel = function(){
 			type:'GET',
 			url: 'http://localhost:3000/readFile',
 			data: data,
-		}).done(function(data){
+		})
+		.done(function(data){
 			//console.log(data);
 			//testData = data;
 			//console.log("this is you data: "+testData);
 			callback(JSON.parse(data));
 		})
+		.fail(function(){
+			alert("Error, no results for "+group+" found, please try again");
+		})
 	};
 
 	self.loadSavedPlaces = function(){
+		for (var i = 0; i < self.listView().length; i++) {
+			self.listView()[i].marker.setMap(null);
+		}
+		self.listView.removeAll();
 		self.showSavedOverlay(true);
 	};
 
 	self.fetchPlaceDetails = function(){
 		self.showSavedOverlay(false);
 		self.readFile(self.getGroup(), function(data){
-			data.forEach(function(value){
-				self.listView.push(new Place(value.name, value.position, value.latitude, value.longitude));
-			})
+			if(data.length !== 0){
+				data.forEach(function(value){
+					self.listView.push(new Place(value.name, value.position, value.latitude, value.longitude, value.type, value.notes, value.address));
+				})
+				map.setCenter(self.listView()[0].position);
+			}else{
+				alert("Error, no results for "+self.getGroup()+" found, please try again");
+			}
 		});
-
 	};
 };
 
