@@ -22,6 +22,8 @@ function initMap() {
 	map.controls[google.maps.ControlPosition.LEFT_TOP].push(inputBox);
 	map.controls[google.maps.ControlPosition.LEFT_TOP].push(getSaved);
 	map.controls[google.maps.ControlPosition.TOP_LEFT].push(seeSavedPlaces);
+	map.controls[google.maps.ControlPosition.TOP_LEFT].push(removeSavedPlaces);
+
 	mapLoaded = true;
 }
 
@@ -241,11 +243,7 @@ var ViewModel = function(){
 
 	self.fetchPlaceDetails = function(){
 
-		for (var i = 0; i < self.listView().length; i++) {
-			self.listView()[i].marker.setMap(null);
-		}
-
-		self.listView.removeAll();
+		self.removeSavedPlaces();
 		self.showSavedOverlay(false);
 		self.readFile(self.getGroup(), function(data){
 			if(data.length !== 0){
@@ -257,6 +255,15 @@ var ViewModel = function(){
 				alert("Error, no results for "+self.getGroup()+" found, please try again");
 			}
 		});
+	};
+
+	self.removeSavedPlaces = function(){
+
+		for (var i = 0; i < self.listView().length; i++) {
+			self.listView()[i].marker.setMap(null);
+		}
+
+		self.listView.removeAll();
 	};
 };
 
