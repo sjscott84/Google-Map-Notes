@@ -45,11 +45,12 @@ var Place = function (name, position, lat, lng, type, note, address){
 	self.marker = new google.maps.Marker({
 		map: map,
 		title: name,
+		icon: 'images/star_gold_16.png',
 		position: self.position,
 		zoomOnClick: false,
 	});
 	google.maps.event.addListener(this.marker, 'click', function() {
-		view.addInfoWindow(self.name, self.address, self.marker, self.type, self.note);
+		view.addInfoWindow(self.name, self.address, self.type, self.note, self.marker);
 		//view.setPlace(self);
 	});
 };
@@ -115,7 +116,7 @@ var ViewModel = function(){
 
 				google.maps.event.addListener(marker, 'click', function() {
 					console.log('click');
-					self.addInfoWindow(place.name, place.formatted_address, marker);
+					self.addInfoWindow(place.name, place.formatted_address, 'type', 'note', marker);
 				});
 
 				if (place.geometry.viewport) {
@@ -133,19 +134,20 @@ var ViewModel = function(){
 		});
 	};
 
-	self.addInfoWindow = function(name, address, marker, type, note){
+	self.addInfoWindow = function(name, address, type, note, marker){
 
 		var nameExists = false
+		var contents;
 
 		view.listView().forEach(function(place){
 			if(place.name === name){
-			var contents = '<b>'+name+'</b><br>'+address+'<br><b>What: </b>'+type+'<br><b>Notes: </b>'+note;
+				contents = '<b>'+name+'</b><br>'+address+'<br><b>What: </b>'+type+'<br><b>Notes: </b>'+note;
 				nameExists = true;
 			}
 		})
 
 		if(!nameExists){
-			var contents = '<b>'+name+'</b><br>'+address+'<br><span><button type="button" onclick="view.saveThisPlace()">Save Place</button><button type="button" onclick="view.removeThisPlace()">Remove Place</button></span>';
+			contents = '<b>'+name+'</b><br>'+address+'<br><span><button type="button" onclick="view.saveThisPlace()">Save Place</button><button type="button" onclick="view.removeThisPlace()">Remove Place</button></span>';
 		
 		}
 
@@ -176,7 +178,12 @@ var ViewModel = function(){
 		placeObject.type = self.placeType();
 		placeObject.notes = self.placeNote();
 		//console.log(placeObject);
-		self.writeFile();
+		self.writeFile(function(){
+			if(self.listView().length !== 0){
+				self.fetchPlaceDetails();
+			}
+		});
+
 		self.showOverlay(false);
 		marker.setMap(null);
 	};
@@ -187,16 +194,18 @@ var ViewModel = function(){
 		self.removeThisPlace();
 	};
 
-	self.writeFile = function(){
+	self.writeFile = function(callback){
 		$.ajax({
 			type: 'POST',
 			url: 'http://localhost:3000/writeFile',
-			dataType: "json",
+			//dataType: "json",
 			data: JSON.stringify(placeObject),
 			contentType: "application/json; charset=utf-8"
 		})
 		.done(function(data){
 			//var testData = data;
+			callback();
+
 			console.log("Successfully saved");
 		})
 		.fail(function(errMsg) {
@@ -231,6 +240,12 @@ var ViewModel = function(){
 	};
 
 	self.fetchPlaceDetails = function(){
+
+		for (var i = 0; i < self.listView().length; i++) {
+			self.listView()[i].marker.setMap(null);
+		}
+
+		self.listView.removeAll();
 		self.showSavedOverlay(false);
 		self.readFile(self.getGroup(), function(data){
 			if(data.length !== 0){
