@@ -10,12 +10,19 @@
 
 <body>
 
-	<input id="pac-input" class="controls" type="text" placeholder="Search Box">
+	<!--<div id="searchOrRetrieve" data-bind="visible: showOptions">
+		<p>Add a new location: </p>
+		<input id="pac-input" class="controls" type="text" placeholder="Search Box">
+		<p>Retreive existing locations:</p>
+		<button id="seeSavedPlaces" type="button" onclick="view.loadSavedPlaces()">See saved places</button>
+	</div>-->
 
 	<div id="map"></div>
 
-	<button id="seeSavedPlaces" type="button" onclick="view.loadSavedPlaces()">See saved places</button>
-	<button id="removeSavedPlaces" type="button" onclick="view.removeSavedPlaces()">Remove saved places</button>
+	<input id="pac-input" class="controls" type="text" placeholder="Search Box">
+
+	<button id="seeSavedPlaces" class="controls" type="button" data-bind="visible: saveButton" onclick="view.loadSavedPlaces()">See saved places</button>
+	<button id="removeSavedPlaces" class="controls" type="button" data-bind="visible: removeButton" onclick="view.removeSavedPlaces()">Remove saved places</button>
 
 	<div id="inputBox" data-bind="visible: showOverlay">
 		<b data-bind="text: placeName"></b>
@@ -44,6 +51,7 @@
 	<!--build:js js/main.min.js -->
 	<script src="js/knockout-3.4.0.js"></script>
 	<script src="js/app.js"></script>
+	<script src="radius search.js"></script>
 	<!--endbuild -->
 	<!--<script type="text/javascript" src="https://oauth.googlecode.com/svn/code/javascript/sha1.js"></script>-->
 	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCZnUzSkNCumO4XVfZ9V26yLh9Y__14C9U&libraries=places&callback=initMap" onerror="onLoadError()"></script>

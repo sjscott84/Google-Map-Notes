@@ -7,7 +7,7 @@ var map,
 	testData,
 	mapLoaded = false,
 	placeObject = {},
-	startPoint = {lat:37.773972, lng: -122.431297};
+	startPoint = {lat: 37.773972, lng: -122.431297};
 	//jsonTest = require("./places.json");
 
 /**
@@ -19,6 +19,7 @@ function initMap() {
 		zoom: 12
 	});
 	view.addSearch();
+	//map.controls[google.maps.ControlPosition.LEFT_TOP].push(searchOrRetrieve);
 	map.controls[google.maps.ControlPosition.LEFT_TOP].push(inputBox);
 	map.controls[google.maps.ControlPosition.LEFT_TOP].push(getSaved);
 	map.controls[google.maps.ControlPosition.TOP_LEFT].push(seeSavedPlaces);
@@ -52,6 +53,17 @@ function initMap() {
 	// Browser doesn't support Geolocation
 	alert("Geolocation is currently unavaliable");
 	}
+
+	view.readFile(startPoint.lat, startPoint.lng, 2, function(data){
+		if(data.length !== 0){
+			data.forEach(function(value){
+				view.listView.push(new Place(value.name, value.position, value.latitude, value.longitude, value.type, value.notes, value.address));
+			});
+			map.setCenter(view.listView()[0].position);
+		}else{
+			alert("Error, no results found, please try again");
+		}
+	});
 }
 
 /**
@@ -91,6 +103,9 @@ var ViewModel = function(){
 	self.placeNote = ko.observable("");
 	self.showOverlay = ko.observable(false);
 	self.showSavedOverlay = ko.observable(false);
+	//self.showOptions = ko.observable(true);
+	self.saveButton = ko.observable(true);
+	self.removeButton = ko.observable(false);
 	self.placeName = ko.observable("");
 	self.placeGroup = ko.observable("");
 	self.placeType = ko.observable("");
@@ -242,8 +257,26 @@ var ViewModel = function(){
 		});
 	};
 
-	self.readFile = function(group, callback){
+	/*self.readFile = function(group, callback){
 		var data = {"group" : group};
+		$.ajax({
+			type:'GET',
+			url: 'http://localhost:3000/readFile',
+			data: data,
+		})
+		.done(function(data){
+			//console.log(data);
+			//testData = data;
+			//console.log("this is you data: "+testData);
+			callback(JSON.parse(data));
+		})
+		.fail(function(){
+			alert("Error, no results for "+group+" found, please try again");
+		});
+	};*/
+
+	self.readFile = function(lat, lng, distance, callback){
+		var data = {"lat" : lat, "lng": lng, "distance": distance};
 		$.ajax({
 			type:'GET',
 			url: 'http://localhost:3000/readFile',
@@ -272,6 +305,8 @@ var ViewModel = function(){
 
 		self.removeSavedPlaces();
 		self.showSavedOverlay(false);
+		self.saveButton(false);
+		self.removeButton(true);
 		self.readFile(self.getGroup(), function(data){
 			if(data.length !== 0){
 				data.forEach(function(value){
@@ -291,6 +326,8 @@ var ViewModel = function(){
 		}
 
 		self.listView.removeAll();
+		self.removeButton(false);
+		self.saveButton(true);
 	};
 };
 

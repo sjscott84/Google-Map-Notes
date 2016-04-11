@@ -13,7 +13,10 @@ app.use(cors());
 app.options('*', cors());
 
 app.get('/readFile', function(request, response){
-	var group = request.query.group;
+
+	var lat = request.query.lat;
+	var lng = request.query.lng;
+	var radius = request.query.distance;
 	var returnedPlaces = [];
 
 	fs.readFile(file, 'utf8', function(err, data){
@@ -21,10 +24,19 @@ app.get('/readFile', function(request, response){
 			console.log(err);
 		}else{
 			var parsedData = JSON.parse(data);
-			console.log(parsedData);
-			for(var i = 0; i<parsedData.places.length; i++){
-				if(parsedData.places[i]["group"] === group){
-					returnedPlaces.push(parsedData.places[i]);
+			var minMax = findLocationsBasedOnRadius(lat, lng, radius);
+			var place = parsedData.places;
+
+			for(var i = 0; i<place.length; i++){
+				//if(parsedData.places[i]["group"] === group){
+				//find all locations within a min and max latitude and longitude
+				if(place[i]["latitude"] > minMax.minLat && place[i]["latitude"] < minMax.maxLat && place[i]["longitude"] > minMax.minLng && place[i]["longitude"] < minMax.maxLng){
+					//calculate distance from start point to saved location
+					var resultDistance = calculateDistance(lat, place[i]["latitude"], lng, place[i]["longitude"]);
+						if(resultDistance < radius){
+							returnedPlaces.push(place[i]);
+						}
+					//returnedPlaces.push(parsedData.places[i]);
 				}
 			}
 			response.send(JSON.stringify(returnedPlaces));
@@ -44,7 +56,6 @@ app.post('/writeFile', function(request, response){
 				}else{
 					var parseJson = JSON.parse(data);
 					parseJson.places.push(request.body);
-
 					fs.writeFile(file, JSON.stringify(parseJson), function(err){
 						if(err){
 							console.log(err);
@@ -62,6 +73,50 @@ app.post('/writeFile', function(request, response){
 app.listen(3000);
 
 console.log("eveything is set up and waiting for you");
+
+// Converts from degrees to radians.
+Math.radians = function(degrees) {
+  return degrees * Math.PI / 180;
+};
+ 
+// Converts from radians to degrees.
+Math.degrees = function(radians) {
+  return radians * 180 / Math.PI;
+};
+
+//find nearby locations
+function findLocationsBasedOnRadius(lat, lng, distance){
+	var distance = distance;
+	var lat = lat;
+	var lng = lng;
+	var radius = 6371;//radius at equater = 6378, at poles 6356
+	var results = {};
+	var latDegrees = Math.degrees(distance/radius);
+	console.log(lat, lng);
+	console.log(latDegrees);
+
+	results.maxLat = (lat*1) + (latDegrees*1);//max
+	results.minLat = lat - latDegrees;//min
+
+	results.maxLng = (lng*1) + (Math.degrees(distance/radius/Math.cos(Math.radians(lat)))*1);//max
+	results.minLng = lng - Math.degrees(distance/radius/Math.cos(Math.radians(lat)));//min
+
+	return results;
+}
+
+//calculate distance from starting point to saved location
+function calculateDistance (lat1, lat2, lng1, lng2){
+
+	var lat1 = Math.radians(lat1);
+	var lat2 = Math.radians(lat2);
+	var lng1 = Math.radians(lng1);
+	var lng2 = Math.radians(lng2);
+
+	var distance = Math.acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(lng1 - lng2));
+
+	console.log(6371 * distance);
+	return 6371 * distance;
+}
 
 // find file testfile.txt does it exist
 
