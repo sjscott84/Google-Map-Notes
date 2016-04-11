@@ -25,6 +25,33 @@ function initMap() {
 	map.controls[google.maps.ControlPosition.TOP_LEFT].push(removeSavedPlaces);
 
 	mapLoaded = true;
+
+	// Try HTML5 geolocation.
+	if (navigator.geolocation) {
+
+		navigator.geolocation.getCurrentPosition(function(position) {
+			var pos = {
+				lat: position.coords.latitude,
+				lng: position.coords.longitude
+			};
+
+			var locationMarker = new google.maps.Marker({
+				map: map,
+				title: "Your Location",
+				icon: 'images/star_blue_16.png',
+				position: pos,
+				zoomOnClick: false
+			});
+
+			map.setCenter(pos);
+
+		}, function() {
+			alert("Geolocation is currently unavaliable");
+		});
+	} else {
+	// Browser doesn't support Geolocation
+	alert("Geolocation is currently unavaliable");
+	}
 }
 
 /**
@@ -138,7 +165,7 @@ var ViewModel = function(){
 
 	self.addInfoWindow = function(name, address, type, note, marker){
 
-		var nameExists = false
+		var nameExists = false;
 		var contents;
 
 		view.listView().forEach(function(place){
@@ -146,7 +173,7 @@ var ViewModel = function(){
 				contents = '<b>'+name+'</b><br>'+address+'<br><b>What: </b>'+type+'<br><b>Notes: </b>'+note;
 				nameExists = true;
 			}
-		})
+		});
 
 		if(!nameExists){
 			contents = '<b>'+name+'</b><br>'+address+'<br><span><button type="button" onclick="view.saveThisPlace()">Save Place</button><button type="button" onclick="view.removeThisPlace()">Remove Place</button></span>';
@@ -212,7 +239,7 @@ var ViewModel = function(){
 		})
 		.fail(function(errMsg) {
 			console.log(errMsg);
-		})
+		});
 	};
 
 	self.readFile = function(group, callback){
@@ -230,7 +257,7 @@ var ViewModel = function(){
 		})
 		.fail(function(){
 			alert("Error, no results for "+group+" found, please try again");
-		})
+		});
 	};
 
 	self.loadSavedPlaces = function(){
@@ -249,7 +276,7 @@ var ViewModel = function(){
 			if(data.length !== 0){
 				data.forEach(function(value){
 					self.listView.push(new Place(value.name, value.position, value.latitude, value.longitude, value.type, value.notes, value.address));
-				})
+				});
 				map.setCenter(self.listView()[0].position);
 			}else{
 				alert("Error, no results for "+self.getGroup()+" found, please try again");
