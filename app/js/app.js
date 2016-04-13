@@ -62,16 +62,7 @@ function initMap() {
 		alert("Geolocation is currently unavaliable");
 	}
 
-	view.readFileByRadius(startPoint.lat, startPoint.lng, 20, function(data){
-		if(data.length !== 0){
-			data.forEach(function(value){
-				view.listView.push(new Place(value.name, value.position, value.latitude, value.longitude, value.type, value.notes, value.address));
-			});
-			map.setCenter(view.listView()[0].position);
-		}else{
-			alert("Error, no results found, please try again");
-		}
-	});
+	view.readFileByRadius(startPoint.lat, startPoint.lng, 2, view.readFileCallBack);
 }
 
 /**
@@ -317,28 +308,21 @@ var ViewModel = function(){
 		self.removeButton(true);
 
 		if(!self.getGroup()){
-			self.readFileByRadius(startPoint.lat, startPoint.lng, 20, function(data){
-				if(data.length !== 0){
-					data.forEach(function(value){
-						self.listView.push(new Place(value.name, value.position, value.latitude, value.longitude, value.type, value.notes, value.address));
-					});
-				}else{
-					alert("Error, no results for "+self.getGroup()+" found, please try again");
-				}
-			});
+			self.readFileByRadius(startPoint.lat, startPoint.lng, 2, self.readFileCallBack);
 		}else{
-			self.readFileByGroup(self.getGroup(), function(data){
-				if(data.length !== 0){
-					data.forEach(function(value){
-						self.listView.push(new Place(value.name, value.position, value.latitude, value.longitude, value.type, value.notes, value.address));
-					});
-					map.setCenter(self.listView()[0].position);
-				}else{
-					alert("Error, no results for "+self.getGroup()+" found, please try again");
-				}
-			});
+			self.readFileByGroup(self.getGroup(), self.readFileCallBack);
 		}
 	};
+
+	self.readFileCallBack = function(data){
+		if(data.length !== 0){
+			data.forEach(function(value){
+				self.listView.push(new Place(value.name, value.position, value.latitude, value.longitude, value.type, value.notes, value.address));
+			});
+		}else{
+			alert("Error, no results found, please try again");
+		}
+	}
 
 	self.removeSavedPlaces = function(){
 
