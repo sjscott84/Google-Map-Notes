@@ -48,13 +48,21 @@ function initMap() {
 
 		}, function() {
 			alert("Geolocation is currently unavaliable");
+
+			var locationMarker = new google.maps.Marker({
+				map: map,
+				title: "Starting Location",
+				icon: 'images/star_blue_16.png',
+				position: startPoint,
+				zoomOnClick: false
+			});
 		});
 	} else {
-	// Browser doesn't support Geolocation
-	alert("Geolocation is currently unavaliable");
+		// Browser doesn't support Geolocation
+		alert("Geolocation is currently unavaliable");
 	}
 
-	view.readFile(startPoint.lat, startPoint.lng, 2, function(data){
+	view.readFileByRadius(startPoint.lat, startPoint.lng, 20, function(data){
 		if(data.length !== 0){
 			data.forEach(function(value){
 				view.listView.push(new Place(value.name, value.position, value.latitude, value.longitude, value.type, value.notes, value.address));
@@ -257,7 +265,7 @@ var ViewModel = function(){
 		});
 	};
 
-	/*self.readFile = function(group, callback){
+	self.readFileByGroup = function(group, callback){
 		var data = {"group" : group};
 		$.ajax({
 			type:'GET',
@@ -273,9 +281,9 @@ var ViewModel = function(){
 		.fail(function(){
 			alert("Error, no results for "+group+" found, please try again");
 		});
-	};*/
+	};
 
-	self.readFile = function(lat, lng, distance, callback){
+	self.readFileByRadius = function(lat, lng, distance, callback){
 		var data = {"lat" : lat, "lng": lng, "distance": distance};
 		$.ajax({
 			type:'GET',
@@ -307,16 +315,29 @@ var ViewModel = function(){
 		self.showSavedOverlay(false);
 		self.saveButton(false);
 		self.removeButton(true);
-		self.readFile(self.getGroup(), function(data){
-			if(data.length !== 0){
-				data.forEach(function(value){
-					self.listView.push(new Place(value.name, value.position, value.latitude, value.longitude, value.type, value.notes, value.address));
-				});
-				map.setCenter(self.listView()[0].position);
-			}else{
-				alert("Error, no results for "+self.getGroup()+" found, please try again");
-			}
-		});
+
+		if(!self.getGroup()){
+			self.readFileByRadius(startPoint.lat, startPoint.lng, 20, function(data){
+				if(data.length !== 0){
+					data.forEach(function(value){
+						self.listView.push(new Place(value.name, value.position, value.latitude, value.longitude, value.type, value.notes, value.address));
+					});
+				}else{
+					alert("Error, no results for "+self.getGroup()+" found, please try again");
+				}
+			});
+		}else{
+			self.readFileByGroup(self.getGroup(), function(data){
+				if(data.length !== 0){
+					data.forEach(function(value){
+						self.listView.push(new Place(value.name, value.position, value.latitude, value.longitude, value.type, value.notes, value.address));
+					});
+					map.setCenter(self.listView()[0].position);
+				}else{
+					alert("Error, no results for "+self.getGroup()+" found, please try again");
+				}
+			});
+		}
 	};
 
 	self.removeSavedPlaces = function(){

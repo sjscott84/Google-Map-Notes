@@ -16,6 +16,7 @@ app.get('/readFile', function(request, response){
 
 	var lat = request.query.lat;
 	var lng = request.query.lng;
+	var group = request.query.group;
 	var radius = request.query.distance;
 	var returnedPlaces = [];
 
@@ -27,16 +28,24 @@ app.get('/readFile', function(request, response){
 			var minMax = findLocationsBasedOnRadius(lat, lng, radius);
 			var place = parsedData.places;
 
-			for(var i = 0; i<place.length; i++){
-				//if(parsedData.places[i]["group"] === group){
-				//find all locations within a min and max latitude and longitude
-				if(place[i]["latitude"] > minMax.minLat && place[i]["latitude"] < minMax.maxLat && place[i]["longitude"] > minMax.minLng && place[i]["longitude"] < minMax.maxLng){
-					//calculate distance from start point to saved location
-					var resultDistance = calculateDistance(lat, place[i]["latitude"], lng, place[i]["longitude"]);
-						if(resultDistance < radius){
-							returnedPlaces.push(place[i]);
-						}
-					//returnedPlaces.push(parsedData.places[i]);
+			if(!group){
+				for(var i = 0; i<place.length; i++){
+					//if(parsedData.places[i]["group"] === group){
+					//find all locations within a min and max latitude and longitude
+					if(place[i]["latitude"] > minMax.minLat && place[i]["latitude"] < minMax.maxLat && place[i]["longitude"] > minMax.minLng && place[i]["longitude"] < minMax.maxLng){
+						//calculate distance from start point to saved location
+						var resultDistance = calculateDistance(lat, place[i]["latitude"], lng, place[i]["longitude"]);
+							if(resultDistance < radius){
+								returnedPlaces.push(place[i]);
+							}
+						//returnedPlaces.push(parsedData.places[i]);
+					}
+				}
+			}else{
+				for(var i = 0; i<place.length; i++){
+					if(parsedData.places[i]["group"] === group){
+						returnedPlaces.push(place[i]);
+					}
 				}
 			}
 			response.send(JSON.stringify(returnedPlaces));
