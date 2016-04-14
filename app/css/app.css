@@ -24,10 +24,31 @@ html, body {
 	font-family: Roboto;
 	font-size: 15px;
 	font-weight: 300;
-	margin-left: 12px;
+	margin-right: 20px;
 	padding: 0 11px 0 13px;
 	text-overflow: ellipsis;
-	width: 300px;
+	width: 80%;
+}
+
+#menu {
+	height: 28px;
+	width: 28px;
+	padding:1px 1px 1px 1px;
+	margin-left: 20px;
+	margin-top: 10px;
+}
+
+#menuList {
+	height: 100%;
+	background-color: #fff;
+	width: 70%;
+	margin-top: 0;
+}
+
+.glyphicon {
+	font-family: Roboto;
+	font-size: 30px;
+	font-weight: 300;
 }
 
 #pac-input:focus {

@@ -16,14 +16,17 @@ var map,
 function initMap() {
 	map = new google.maps.Map(document.getElementById('map'), {
 		center: startPoint,
-		zoom: 12
+		zoom: 12,
+		disableDefaultUI: true
 	});
 	view.addSearch();
 	//map.controls[google.maps.ControlPosition.LEFT_TOP].push(searchOrRetrieve);
-	map.controls[google.maps.ControlPosition.LEFT_TOP].push(inputBox);
-	map.controls[google.maps.ControlPosition.LEFT_TOP].push(getSaved);
-	map.controls[google.maps.ControlPosition.TOP_LEFT].push(seeSavedPlaces);
-	map.controls[google.maps.ControlPosition.TOP_LEFT].push(removeSavedPlaces);
+	map.controls[google.maps.ControlPosition.TOP_LEFT].push(menu);
+	map.controls[google.maps.ControlPosition.LEFT_CENTER].push(menuList);
+	map.controls[google.maps.ControlPosition.TOP_RIGHT].push(inputBox);
+	//map.controls[google.maps.ControlPosition.LEFT_TOP].push(getSaved);
+	//map.controls[google.maps.ControlPosition.TOP_LEFT].push(seeSavedPlaces);
+	//map.controls[google.maps.ControlPosition.TOP_LEFT].push(removeSavedPlaces);
 
 	mapLoaded = true;
 
@@ -97,7 +100,9 @@ var Place = function (name, position, lat, lng, type, note, address){
 
 var ViewModel = function(){
 	var self = this,
-		searchBox;
+		searchBox,
+		input = document.getElementById('pac-input'),
+		menu = document.getElementById('menu');
 
 	self.placeNote = ko.observable("");
 	self.showOverlay = ko.observable(false);
@@ -110,13 +115,14 @@ var ViewModel = function(){
 	self.placeType = ko.observable("");
 	self.getGroup = ko.observable("");
 	self.listView = ko.observableArray([]);
+	self.showMenuList = ko.observable(false);
 
 	self.addSearch = function (){
 		// Create the search box and link it to the UI element.
-		var input = document.getElementById('pac-input');
+		//var input = document.getElementById('pac-input');
 		searchBox = new google.maps.places.SearchBox(input);
 		var bounds = new google.maps.LatLngBounds();
-		map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+		map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
 
 		//Bias the SearchBox results towards current map's viewport.
 		map.addListener('bounds_changed', function() {
@@ -334,6 +340,23 @@ var ViewModel = function(){
 		self.removeButton(false);
 		self.saveButton(true);
 	};
+
+	self.openMenu = function(){
+		console.log("Open Menu");
+		if(!self.showMenuList()){
+			map.controls[google.maps.ControlPosition.TOP_LEFT].clear(menu);
+			map.controls[google.maps.ControlPosition.TOP_CENTER].clear(input);
+			self.showMenuList(true);
+		}
+	}
+
+	self.closeMenu = function(){
+		if(view.showMenuList()){
+			view.showMenuList(false);
+			map.controls[google.maps.ControlPosition.TOP_LEFT].push(menu);
+			map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
+		}
+	}
 };
 
 view = new ViewModel();
