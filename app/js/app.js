@@ -283,6 +283,24 @@ var ViewModel = function(){
 		});
 	};
 
+	self.readFileByType = function(type, callback){
+		var data = {"type" : type};
+		$.ajax({
+			type:'GET',
+			url: 'http://localhost:3000/readFile',
+			data: data,
+		})
+		.done(function(data){
+			//console.log(data);
+			//testData = data;
+			//console.log("this is you data: "+testData);
+			callback(JSON.parse(data));
+		})
+		.fail(function(){
+			alert("Error, no results for "+type+" found, please try again");
+		});
+	};
+
 	self.readFileByRadius = function(lat, lng, distance, callback){
 		var data = {"lat" : lat, "lng": lng, "distance": distance};
 		$.ajax({
@@ -329,7 +347,8 @@ var ViewModel = function(){
 	self.fetchPlaceDetails = function(){
 
 		self.removeExisitingPlaces();
-		self.showSavedOverlay(false);
+		self.showSavedGroupOverlay(false);
+		self.showSavedTypeOverlay(false)
 		self.saveButton(false);
 		self.removeButton(true);
 

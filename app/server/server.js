@@ -17,6 +17,7 @@ app.get('/readFile', function(request, response){
 	var lat = request.query.lat;
 	var lng = request.query.lng;
 	var group = request.query.group;
+	var type = request.query.type;
 	var radius = request.query.distance;
 	var returnedPlaces = [];
 
@@ -28,7 +29,7 @@ app.get('/readFile', function(request, response){
 			var minMax = findLocationsBasedOnRadius(lat, lng, radius);
 			var place = parsedData.places;
 
-			if(!group){
+			if(!group && !type){
 				for(var i = 0; i<place.length; i++){
 					//if(parsedData.places[i]["group"] === group){
 					//find all locations within a min and max latitude and longitude
@@ -41,9 +42,15 @@ app.get('/readFile', function(request, response){
 						//returnedPlaces.push(parsedData.places[i]);
 					}
 				}
-			}else{
+			}else if(group && !type){
 				for(var i = 0; i<place.length; i++){
-					if(parsedData.places[i]["group"] === group){
+					if(place[i]["group"] === group){
+						returnedPlaces.push(place[i]);
+					}
+				}
+			}else if(!group && type){
+				for(var i = 0; i<place.length; i++){
+					if(place[i]["type"] === type){
 						returnedPlaces.push(place[i]);
 					}
 				}
