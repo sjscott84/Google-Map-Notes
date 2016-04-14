@@ -24,7 +24,7 @@ function initMap() {
 	map.controls[google.maps.ControlPosition.TOP_LEFT].push(menu);
 	map.controls[google.maps.ControlPosition.LEFT_CENTER].push(menuList);
 	map.controls[google.maps.ControlPosition.TOP_RIGHT].push(inputBox);
-	//map.controls[google.maps.ControlPosition.LEFT_TOP].push(getSaved);
+	map.controls[google.maps.ControlPosition.LEFT_TOP].push(getSaved);
 	//map.controls[google.maps.ControlPosition.TOP_LEFT].push(seeSavedPlaces);
 	//map.controls[google.maps.ControlPosition.TOP_LEFT].push(removeSavedPlaces);
 
@@ -298,13 +298,27 @@ var ViewModel = function(){
 		});
 	};
 
-	self.loadSavedPlaces = function(){
+	self.loadSavedPlacesByGroup = function(){
+
+		for (var i = 0; i < self.listView().length; i++) {
+			self.listView()[i].marker.setMap(null);
+		}
+
+		self.listView.removeAll();
+		self.showSavedOverlay(true);
+		self.closeMenu();
+	};
+
+	//TODO: Refactor this so it is not a repeat of loadSavedPlacesByGroup function
+	self.loadSavedPlacesByRadius = function(){
 		for (var i = 0; i < self.listView().length; i++) {
 			self.listView()[i].marker.setMap(null);
 		}
 		self.listView.removeAll();
-		self.showSavedOverlay(true);
-	};
+		self.closeMenu();
+
+		self.readFileByRadius(startPoint.lat, startPoint.lng, 2, view.readFileCallBack)
+	}
 
 	self.fetchPlaceDetails = function(){
 
@@ -337,8 +351,9 @@ var ViewModel = function(){
 		}
 
 		self.listView.removeAll();
-		self.removeButton(false);
-		self.saveButton(true);
+		self.closeMenu();
+		//self.removeButton(false);
+		//self.saveButton(true);
 	};
 
 	self.openMenu = function(){

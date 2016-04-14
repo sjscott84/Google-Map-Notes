@@ -30,9 +30,10 @@
 
 		<div id="menuList" data-bind="visible: showMenuList">
 			<ul>
-				<li>One</li>
-				<li>Two</li>
-				<li>Three</li>
+				<li onclick="view.removeSavedPlaces()">Remove Saved Places</li>
+				<li onclick="view.loadSavedPlacesByGroup()">Show saved places by group</li>
+				<li onclick="view.loadSavedPlacesByRadius()">Show saved places by location</li>
+				<li>Something</li>
 			</ul>
 			<button type="button" class="btn btn-default btn-lg">
 				<span class="glyphicon glyphicon-remove" id="menuClose" onclick="view.closeMenu()"></span>
