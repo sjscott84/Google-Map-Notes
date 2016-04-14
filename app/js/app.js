@@ -24,7 +24,8 @@ function initMap() {
 	map.controls[google.maps.ControlPosition.TOP_LEFT].push(menu);
 	map.controls[google.maps.ControlPosition.LEFT_CENTER].push(menuList);
 	map.controls[google.maps.ControlPosition.TOP_RIGHT].push(inputBox);
-	map.controls[google.maps.ControlPosition.LEFT_TOP].push(getSaved);
+	map.controls[google.maps.ControlPosition.LEFT_TOP].push(getSavedGroup);
+	map.controls[google.maps.ControlPosition.LEFT_TOP].push(getSavedType);
 	//map.controls[google.maps.ControlPosition.TOP_LEFT].push(seeSavedPlaces);
 	//map.controls[google.maps.ControlPosition.TOP_LEFT].push(removeSavedPlaces);
 
@@ -106,7 +107,8 @@ var ViewModel = function(){
 
 	self.placeNote = ko.observable("");
 	self.showOverlay = ko.observable(false);
-	self.showSavedOverlay = ko.observable(false);
+	self.showSavedGroupOverlay = ko.observable(false);
+	self.showSavedTypeOverlay = ko.observable(false);
 	//self.showOptions = ko.observable(true);
 	self.saveButton = ko.observable(true);
 	self.removeButton = ko.observable(false);
@@ -114,6 +116,7 @@ var ViewModel = function(){
 	self.placeGroup = ko.observable("");
 	self.placeType = ko.observable("");
 	self.getGroup = ko.observable("");
+	self.getType = ko.observable("");
 	self.listView = ko.observableArray([]);
 	self.showMenuList = ko.observable(false);
 
@@ -298,39 +301,44 @@ var ViewModel = function(){
 		});
 	};
 
-	self.loadSavedPlacesByGroup = function(){
-
+	self.removeExisitingPlaces = function(){
 		for (var i = 0; i < self.listView().length; i++) {
 			self.listView()[i].marker.setMap(null);
 		}
-
 		self.listView.removeAll();
-		self.showSavedOverlay(true);
 		self.closeMenu();
+	}
+
+	self.loadSavedPlacesByGroup = function(){
+		self.removeExisitingPlaces();
+		self.showSavedGroupOverlay(true);
 	};
+
+	self.loadSavedPlacesByType = function(){
+		self.removeExisitingPlaces();
+		self.showSavedTypeOverlay(true);
+
+	}
 
 	//TODO: Refactor this so it is not a repeat of loadSavedPlacesByGroup function
 	self.loadSavedPlacesByRadius = function(){
-		for (var i = 0; i < self.listView().length; i++) {
-			self.listView()[i].marker.setMap(null);
-		}
-		self.listView.removeAll();
-		self.closeMenu();
-
+		self.removeExisitingPlaces();
 		self.readFileByRadius(startPoint.lat, startPoint.lng, 2, view.readFileCallBack)
 	}
 
 	self.fetchPlaceDetails = function(){
 
-		self.removeSavedPlaces();
+		self.removeExisitingPlaces();
 		self.showSavedOverlay(false);
 		self.saveButton(false);
 		self.removeButton(true);
 
-		if(!self.getGroup()){
+		if(!self.getGroup() && !self.getType()){
 			self.readFileByRadius(startPoint.lat, startPoint.lng, 2, self.readFileCallBack);
-		}else{
+		}else if(self.getGroup()){
 			self.readFileByGroup(self.getGroup(), self.readFileCallBack);
+		}else if(self.getType()){
+			self.readFileByType(self.getType(), self.readFileCallBack);
 		}
 	};
 
@@ -343,18 +351,6 @@ var ViewModel = function(){
 			alert("Error, no results found, please try again");
 		}
 	}
-
-	self.removeSavedPlaces = function(){
-
-		for (var i = 0; i < self.listView().length; i++) {
-			self.listView()[i].marker.setMap(null);
-		}
-
-		self.listView.removeAll();
-		self.closeMenu();
-		//self.removeButton(false);
-		//self.saveButton(true);
-	};
 
 	self.openMenu = function(){
 		console.log("Open Menu");

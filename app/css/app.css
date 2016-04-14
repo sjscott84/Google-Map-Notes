@@ -38,6 +38,10 @@ html, body {
 	margin-top: 10px;
 }
 
+#menuClose {
+	float: right;
+}
+
 #menuList {
 	height: 100%;
 	background-color: #fff;
@@ -59,7 +63,7 @@ html, body {
 	font-family: Roboto;
 }
 
-#inputBox, #getSaved, #searchOrRetrieve {
+#inputBox, #getSavedGroup, #getSavedType, #searchOrRetrieve {
 	height: 60%;
 	width: 50%;
 	margin-left: 25%;
@@ -85,4 +89,30 @@ html, body {
 }
 #target {
 	width: 345px;
+}
+
+ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	background-color: #fff;
+}
+
+li {
+	display: block;
+	color: #000;
+	padding: 8px 0 8px 16px;
+	text-decoration: none;
+	font-family: Roboto;
+	font-size: 13px;
+	font-weight: bold;
+	border-style: ridge; 
+
+}
+
+/* Change the link color on hover */
+li a:hover {
+    background-color: #555;
+    color: white;
 }
