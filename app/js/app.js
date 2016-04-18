@@ -198,7 +198,7 @@ var ViewModel = function(){
 
 		view.listView().forEach(function(place){
 			if(place.name === name){
-				contents = '<b>'+name+'</b><br>'+address+'<br><b>What: </b>'+type+'<br><b>Notes: </b>'+note+'<br><button type="button" onclick="view.getDirections()">Get Directions</button>';
+				contents = '<b>'+name+'</b><br>'+address+'<br><b>What: </b>'+type+'<br><b>Notes: </b>'+note+'<br><a onclick="view.openGoogleMap()">View on google maps</a>';
 				nameExists = true;
 			}
 		});
@@ -374,6 +374,8 @@ var ViewModel = function(){
 		}else{
 			alert("Error, no results found, please try again");
 		}
+
+		self.fitBoundsToVisibleMarkers();
 	}
 
 	self.openMenu = function(){
@@ -422,6 +424,30 @@ var ViewModel = function(){
 				//self.showInfo(name, marker, rating, what, url, distance, duration);
 			}
 		});
+	};
+
+	self.openGoogleMap = function(){
+		var lat = self.currentPlace().position.lat;
+		var lng = self.currentPlace().position.lng;
+
+		window.open("https://maps.google.com/maps?ll="+lat+","+lng+"&z=13&t=m&hl=en-US&q="+lat+"+"+lng);
+
+	}
+
+	self.fitBoundsToVisibleMarkers = function() {
+
+		if(map){
+
+			var bounds = new google.maps.LatLngBounds();
+
+			for (var i=0; i<self.listView().length; i++) {
+				if(self.listView()[i].marker.getVisible()) {
+					bounds.extend(self.listView()[i].marker.getPosition() );
+				}
+			}
+
+			map.fitBounds(bounds);
+		}
 	};
 };
 
