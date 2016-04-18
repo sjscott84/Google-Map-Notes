@@ -95,6 +95,7 @@ var Place = function (name, position, lat, lng, type, note, address){
 	});
 	google.maps.event.addListener(this.marker, 'click', function() {
 		view.addInfoWindow(self.name, self.address, self.type, self.note, self.marker);
+		view.currentPlace(self);
 		//view.setPlace(self);
 	});
 };
@@ -103,7 +104,9 @@ var ViewModel = function(){
 	var self = this,
 		searchBox,
 		input = document.getElementById('pac-input'),
-		menu = document.getElementById('menu');
+		menu = document.getElementById('menu'),
+		directionsService,
+		directionsDisplay;
 
 	self.placeNote = ko.observable("");
 	self.showOverlay = ko.observable(false);
@@ -119,6 +122,8 @@ var ViewModel = function(){
 	self.getType = ko.observable("");
 	self.listView = ko.observableArray([]);
 	self.showMenuList = ko.observable(false);
+	self.showDirections = ko.observable(false);
+	self.currentPlace = ko.observable();
 
 	self.addSearch = function (){
 		// Create the search box and link it to the UI element.
@@ -132,8 +137,8 @@ var ViewModel = function(){
 			searchBox.setBounds(map.getBounds());
 		});
 
-		//directionsDisplay = new google.maps.DirectionsRenderer();
-		//directionsService = new google.maps.DirectionsService();
+		directionsDisplay = new google.maps.DirectionsRenderer();
+		directionsService = new google.maps.DirectionsService();
 
 		// Listen for the event fired when the user selects a prediction,
 		// removes any existing search history and
@@ -193,7 +198,7 @@ var ViewModel = function(){
 
 		view.listView().forEach(function(place){
 			if(place.name === name){
-				contents = '<b>'+name+'</b><br>'+address+'<br><b>What: </b>'+type+'<br><b>Notes: </b>'+note;
+				contents = '<b>'+name+'</b><br>'+address+'<br><b>What: </b>'+type+'<br><b>Notes: </b>'+note+'<br><button type="button" onclick="view.getDirections()">Get Directions</button>';
 				nameExists = true;
 			}
 		});
@@ -387,6 +392,37 @@ var ViewModel = function(){
 			map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
 		}
 	}
+
+	self.showDirection = function(){
+
+	}
+
+	self.getDirections = function (){
+		var rendererOptions = {
+			map: map
+		}
+
+		directionsDisplay.setMap(map);
+		directionsDisplay.setOptions( { suppressMarkers: true } );
+		//directionsDisplay.setPanel(document.getElementById("directions-panel"));
+
+		var start = startPoint;
+		var end = self.currentPlace().position;
+		var request = {
+			origin:start,
+			destination:end,
+			travelMode: google.maps.TravelMode.WALKING
+		};
+
+		directionsService.route(request, function(result, status) {
+			if (status == google.maps.DirectionsStatus.OK) {
+				directionsDisplay.setDirections(result);
+				//var distance = result.routes[0].legs[0].distance.text;
+				//var duration = result.routes[0].legs[0].duration.text;
+				//self.showInfo(name, marker, rating, what, url, distance, duration);
+			}
+		});
+	};
 };
 
 view = new ViewModel();
