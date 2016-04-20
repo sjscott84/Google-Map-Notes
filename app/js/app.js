@@ -5,10 +5,9 @@ var map,
 	marker,
 	infoWindow,
 	testData,
-	mapLoaded = false,
 	placeObject = {},
-	startPoint = {lat: 37.773972, lng: -122.431297};
-	//jsonTest = require("./places.json");
+	startPoint = {lat: 37.773972, lng: -122.431297},
+	radius = 2;
 
 /**
  * Add google maps to screen
@@ -20,16 +19,12 @@ function initMap() {
 		disableDefaultUI: true
 	});
 	view.addSearch();
-	//map.controls[google.maps.ControlPosition.LEFT_TOP].push(searchOrRetrieve);
+
 	map.controls[google.maps.ControlPosition.TOP_LEFT].push(menu);
 	map.controls[google.maps.ControlPosition.LEFT_CENTER].push(menuList);
 	map.controls[google.maps.ControlPosition.TOP_RIGHT].push(inputBox);
 	map.controls[google.maps.ControlPosition.LEFT_TOP].push(getSavedGroup);
 	map.controls[google.maps.ControlPosition.LEFT_TOP].push(getSavedType);
-	//map.controls[google.maps.ControlPosition.TOP_LEFT].push(seeSavedPlaces);
-	//map.controls[google.maps.ControlPosition.TOP_LEFT].push(removeSavedPlaces);
-
-	mapLoaded = true;
 
 	// Try HTML5 geolocation.
 	if (navigator.geolocation) {
@@ -66,7 +61,7 @@ function initMap() {
 		alert("Geolocation is currently unavaliable");
 	}
 
-	view.readFileByRadius(startPoint.lat, startPoint.lng, 2, view.readFileCallBack);
+	view.readFileByRadius(startPoint.lat, startPoint.lng, radius, view.readFileCallBack);
 }
 
 /**
@@ -76,6 +71,9 @@ function onLoadError(){
 	alert("Google is currently unavaliable, please try again later");
 }
 
+/**
+ * Place Object
+*/
 var Place = function (name, position, lat, lng, type, note, address){
 	var self = this;
 	self.map = map;
@@ -96,7 +94,6 @@ var Place = function (name, position, lat, lng, type, note, address){
 	google.maps.event.addListener(this.marker, 'click', function() {
 		view.addInfoWindow(self.name, self.address, self.type, self.note, self.marker);
 		view.currentPlace(self);
-		//view.setPlace(self);
 	});
 };
 
@@ -112,7 +109,6 @@ var ViewModel = function(){
 	self.showOverlay = ko.observable(false);
 	self.showSavedGroupOverlay = ko.observable(false);
 	self.showSavedTypeOverlay = ko.observable(false);
-	//self.showOptions = ko.observable(true);
 	self.saveButton = ko.observable(true);
 	self.removeButton = ko.observable(false);
 	self.placeName = ko.observable("");
@@ -125,11 +121,12 @@ var ViewModel = function(){
 	self.showDirections = ko.observable(false);
 	self.currentPlace = ko.observable();
 
+	/**
+ 	* Add search functionality
+	*/
 	self.addSearch = function (){
 		// Create the search box and link it to the UI element.
-		//var input = document.getElementById('pac-input');
 		searchBox = new google.maps.places.SearchBox(input);
-		var bounds = new google.maps.LatLngBounds();
 		map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
 
 		//Bias the SearchBox results towards current map's viewport.
@@ -191,8 +188,10 @@ var ViewModel = function(){
 		});
 	};
 
+	/**
+ 	* Add infowindow to marker
+	*/
 	self.addInfoWindow = function(name, address, type, note, marker){
-
 		var nameExists = false;
 		var contents;
 
@@ -205,7 +204,6 @@ var ViewModel = function(){
 
 		if(!nameExists){
 			contents = '<b>'+name+'</b><br>'+address+'<br><span><button type="button" onclick="view.saveThisPlace()">Save Place</button><button type="button" onclick="view.removeThisPlace()">Remove Place</button></span>';
-		
 		}
 
 		if(infoWindow){
@@ -219,22 +217,30 @@ var ViewModel = function(){
 		infoWindow.open(map, marker);
 	};
 
+	/**
+	 * Save a searched place
+	*/
 	self.saveThisPlace = function(){
 		infoWindow.close();
 		self.showOverlay(true);
 		self.placeName(marker.title);
 	};
 
+	/**
+	* Remove searched place from screen without saving
+	*/
 	self.removeThisPlace = function(){
 		infoWindow.close();
 		marker.setMap(null);
 	};
 
+	/**
+	* Assing group, type and notes to place and call writeFile function to save
+	*/
 	self.savePlace = function(){
 		placeObject.group = self.placeGroup();
 		placeObject.type = self.placeType();
 		placeObject.notes = self.placeNote();
-		//console.log(placeObject);
 		self.writeFile(function(){
 			if(self.listView().length !== 0){
 				self.fetchPlaceDetails();
@@ -245,24 +251,27 @@ var ViewModel = function(){
 		marker.setMap(null);
 	};
 
+	/**
+	 * Empty placeObject and close save place overlay
+	*/
 	self.dontSavePlace = function(){
 		placeObject = {};
 		self.showOverlay(false);
 		self.removeThisPlace();
 	};
 
+	/**
+	 * Save place to database
+	 */
 	self.writeFile = function(callback){
 		$.ajax({
 			type: 'POST',
 			url: 'http://localhost:3000/writeFile',
-			//dataType: "json",
 			data: JSON.stringify(placeObject),
 			contentType: "application/json; charset=utf-8"
 		})
 		.done(function(data){
-			//var testData = data;
 			callback();
-
 			console.log("Successfully saved");
 		})
 		.fail(function(errMsg) {
@@ -270,6 +279,9 @@ var ViewModel = function(){
 		});
 	};
 
+	/**
+	 * Get places by group from database
+	 */
 	self.readFileByGroup = function(group, callback){
 		var data = {"group" : group};
 		$.ajax({
@@ -278,9 +290,6 @@ var ViewModel = function(){
 			data: data,
 		})
 		.done(function(data){
-			//console.log(data);
-			//testData = data;
-			//console.log("this is you data: "+testData);
 			callback(JSON.parse(data));
 		})
 		.fail(function(){
@@ -288,6 +297,9 @@ var ViewModel = function(){
 		});
 	};
 
+	/**
+	 * Get places by type from database
+	 */
 	self.readFileByType = function(type, callback){
 		var data = {"type" : type};
 		$.ajax({
@@ -296,9 +308,6 @@ var ViewModel = function(){
 			data: data,
 		})
 		.done(function(data){
-			//console.log(data);
-			//testData = data;
-			//console.log("this is you data: "+testData);
 			callback(JSON.parse(data));
 		})
 		.fail(function(){
@@ -306,6 +315,9 @@ var ViewModel = function(){
 		});
 	};
 
+	/**
+	 * Get places by radius from starting point from database
+	 */
 	self.readFileByRadius = function(lat, lng, distance, callback){
 		var data = {"lat" : lat, "lng": lng, "distance": distance};
 		$.ajax({
@@ -314,51 +326,61 @@ var ViewModel = function(){
 			data: data,
 		})
 		.done(function(data){
-			//console.log(data);
-			//testData = data;
-			//console.log("this is you data: "+testData);
 			callback(JSON.parse(data));
 		})
 		.fail(function(){
-			alert("Error, no results for "+group+" found, please try again");
+			alert("Error, no results found, please try again");
 		});
 	};
 
+	/**
+	 * Remove places from screen
+	 */
 	self.removeExisitingPlaces = function(){
 		for (var i = 0; i < self.listView().length; i++) {
 			self.listView()[i].marker.setMap(null);
 		}
 		self.listView.removeAll();
 		self.closeMenu();
-	}
+	};
 
+	/**
+	 * Open overlay to get saved places by group
+	 */
 	self.loadSavedPlacesByGroup = function(){
 		self.removeExisitingPlaces();
 		self.showSavedGroupOverlay(true);
 	};
 
+	/**
+	 * Open overlay to get saved places by type
+	 */
 	self.loadSavedPlacesByType = function(){
 		self.removeExisitingPlaces();
 		self.showSavedTypeOverlay(true);
 
-	}
+	};
 
-	//TODO: Refactor this so it is not a repeat of loadSavedPlacesByGroup function
+	/**
+	 * Open overlay to get saved places by radius
+	 */
 	self.loadSavedPlacesByRadius = function(){
 		self.removeExisitingPlaces();
-		self.readFileByRadius(startPoint.lat, startPoint.lng, 2, view.readFileCallBack)
-	}
+		self.readFileByRadius(startPoint.lat, startPoint.lng, radius, view.readFileCallBack);
+	};
 
+	/**
+	 * Choose appropriate search method for places (be group, type or radius)
+	 */
 	self.fetchPlaceDetails = function(){
-
 		self.removeExisitingPlaces();
 		self.showSavedGroupOverlay(false);
-		self.showSavedTypeOverlay(false)
+		self.showSavedTypeOverlay(false);
 		self.saveButton(false);
 		self.removeButton(true);
 
 		if(!self.getGroup() && !self.getType()){
-			self.readFileByRadius(startPoint.lat, startPoint.lng, 2, self.readFileCallBack);
+			self.readFileByRadius(startPoint.lat, startPoint.lng, radius, self.readFileCallBack);
 		}else if(self.getGroup()){
 			self.readFileByGroup(self.getGroup(), self.readFileCallBack);
 		}else if(self.getType()){
@@ -366,6 +388,9 @@ var ViewModel = function(){
 		}
 	};
 
+	/**
+	 * Callback function for readFile functions to push return data to self.listView for display
+	 */
 	self.readFileCallBack = function(data){
 		if(data.length !== 0){
 			data.forEach(function(value){
@@ -376,66 +401,44 @@ var ViewModel = function(){
 		}
 
 		self.fitBoundsToVisibleMarkers();
-	}
+	};
 
+	/**
+	 * Open menu
+	 */
 	self.openMenu = function(){
-		console.log("Open Menu");
 		if(!self.showMenuList()){
 			map.controls[google.maps.ControlPosition.TOP_LEFT].clear(menu);
 			map.controls[google.maps.ControlPosition.TOP_CENTER].clear(input);
 			self.showMenuList(true);
 		}
-	}
+	};
 
+	/**
+	 * Close menu
+	 */
 	self.closeMenu = function(){
 		if(view.showMenuList()){
 			view.showMenuList(false);
 			map.controls[google.maps.ControlPosition.TOP_LEFT].push(menu);
 			map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
 		}
-	}
-
-	self.showDirection = function(){
-
-	}
-
-	self.getDirections = function (){
-		var rendererOptions = {
-			map: map
-		}
-
-		directionsDisplay.setMap(map);
-		directionsDisplay.setOptions( { suppressMarkers: true } );
-		//directionsDisplay.setPanel(document.getElementById("directions-panel"));
-
-		var start = startPoint;
-		var end = self.currentPlace().position;
-		var request = {
-			origin:start,
-			destination:end,
-			travelMode: google.maps.TravelMode.WALKING
-		};
-
-		directionsService.route(request, function(result, status) {
-			if (status == google.maps.DirectionsStatus.OK) {
-				directionsDisplay.setDirections(result);
-				//var distance = result.routes[0].legs[0].distance.text;
-				//var duration = result.routes[0].legs[0].duration.text;
-				//self.showInfo(name, marker, rating, what, url, distance, duration);
-			}
-		});
 	};
 
+	/**
+	 * Open link to google maps based on current place latitude and longitude
+	 */
 	self.openGoogleMap = function(){
 		var lat = self.currentPlace().position.lat;
 		var lng = self.currentPlace().position.lng;
 
 		window.open("https://maps.google.com/maps?ll="+lat+","+lng+"&z=13&t=m&hl=en-US&q="+lat+"+"+lng);
+	};
 
-	}
-
+	/**
+	 * Change zoom based on visible markers
+	 */
 	self.fitBoundsToVisibleMarkers = function() {
-
 		if(map){
 
 			var bounds = new google.maps.LatLngBounds();
@@ -445,7 +448,6 @@ var ViewModel = function(){
 					bounds.extend(self.listView()[i].marker.getPosition() );
 				}
 			}
-
 			map.fitBounds(bounds);
 		}
 	};
