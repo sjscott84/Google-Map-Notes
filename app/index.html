@@ -45,7 +45,7 @@
 		</span>
 		</div>
 
-		<div id="getSavedGroup" data-bind="visible: showSavedGroupOverlay">
+		<div id="getSaved" data-bind="visible: showSavedGroupOverlay">
 			<p>Search by either a group or a type or both</p>
 			<p>Which group would you like to see?</p>
 			<input class="notes" type="text" data-bind="textInput: getGroup">
@@ -53,13 +53,6 @@
 			<input class="notes" type="text" data-bind="textInput: getType">
 			<button type="button" onclick="view.fetchPlaceDetails()">Get <span data-bind="text: getGroup"></span> Places</button>
 		</div>
-
-		<div id="getSavedType" data-bind="visible: showSavedTypeOverlay">
-			<p>Which type place would you like to see?</p>
-			<input class="notes" type="text" data-bind="textInput: getType">
-			<button type="button" onclick="view.fetchPlaceDetails()">Get <span data-bind="text: getType"></span> Places</button>
-		</div>
-
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 	<!--build:js js/main.min.js -->

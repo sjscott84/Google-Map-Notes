@@ -6,7 +6,8 @@ var map,
 	infoWindow,
 	testData,
 	placeObject = {},
-	startPoint = {lat: 37.773972, lng: -122.431297},
+	pos,
+	startPoint = {lat: 34.5133, lng: -94.1629},
 	radius = 2;
 
 /**
@@ -15,23 +16,33 @@ var map,
 function initMap() {
 	map = new google.maps.Map(document.getElementById('map'), {
 		center: startPoint,
-		zoom: 12,
+		zoom: 2,
 		disableDefaultUI: true,
 		zoomControl: true
 	});
+
 	view.addSearch();
 
 	map.controls[google.maps.ControlPosition.TOP_LEFT].push(menu);
 	map.controls[google.maps.ControlPosition.LEFT_CENTER].push(menuList);
 	map.controls[google.maps.ControlPosition.TOP_RIGHT].push(inputBox);
-	map.controls[google.maps.ControlPosition.LEFT_TOP].push(getSavedGroup);
-	map.controls[google.maps.ControlPosition.LEFT_TOP].push(getSavedType);
+	map.controls[google.maps.ControlPosition.LEFT_TOP].push(getSaved);
 
 	// Try HTML5 geolocation.
-	if (navigator.geolocation) {
+	geolocateLocation(function(){
+		view.readFileByRadius(pos.lat, pos.lng, radius, view.readFileCallBack);
+	});
+
+}
+
+/**
+ * Find current location
+ */
+function geolocateLocation(callback){
+if (navigator.geolocation) {
 
 		navigator.geolocation.getCurrentPosition(function(position) {
-			var pos = {
+			pos = {
 				lat: position.coords.latitude,
 				lng: position.coords.longitude
 			};
@@ -46,23 +57,15 @@ function initMap() {
 
 			map.setCenter(pos);
 
+			callback();
+
 		}, function() {
 			alert("Geolocation is currently unavaliable");
-
-			var locationMarker = new google.maps.Marker({
-				map: map,
-				title: "Starting Location",
-				icon: 'images/star_blue_16.png',
-				position: startPoint,
-				zoomOnClick: false
-			});
 		});
 	} else {
 		// Browser doesn't support Geolocation
 		alert("Geolocation is currently unavaliable");
 	}
-
-	view.readFileByRadius(startPoint.lat, startPoint.lng, radius, view.readFileCallBack);
 }
 
 /**
