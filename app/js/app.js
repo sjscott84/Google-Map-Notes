@@ -118,7 +118,6 @@ var ViewModel = function(){
 	self.getType = ko.observable("");
 	self.listView = ko.observableArray([]);
 	self.showMenuList = ko.observable(false);
-	self.showDirections = ko.observable(false);
 	self.currentPlace = ko.observable();
 
 	/**
@@ -407,6 +406,8 @@ var ViewModel = function(){
 	 * Open menu
 	 */
 	self.openMenu = function(){
+		self.showSavedGroupOverlay(false);
+		self.showSavedTypeOverlay(false);
 		if(!self.showMenuList()){
 			map.controls[google.maps.ControlPosition.TOP_LEFT].clear(menu);
 			map.controls[google.maps.ControlPosition.TOP_CENTER].clear(input);
