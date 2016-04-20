@@ -31,8 +31,6 @@ app.get('/readFile', function(request, response){
 
 			if(!group && !type){
 				for(var i = 0; i<place.length; i++){
-					//if(parsedData.places[i]["group"] === group){
-					//find all locations within a min and max latitude and longitude
 					if(place[i]["latitude"] > minMax.minLat && place[i]["latitude"] < minMax.maxLat && place[i]["longitude"] > minMax.minLng && place[i]["longitude"] < minMax.maxLng){
 						//calculate distance from start point to saved location
 						var resultDistance = calculateDistance(lat, place[i]["latitude"], lng, place[i]["longitude"]);
@@ -51,6 +49,12 @@ app.get('/readFile', function(request, response){
 			}else if(!group && type){
 				for(var i = 0; i<place.length; i++){
 					if(place[i]["type"] === type){
+						returnedPlaces.push(place[i]);
+					}
+				}
+			}else if(group && type){
+				for(var i = 0; i<place.length; i++){
+					if(place[i]["type"] === type && place[i]["group"] === group){
 						returnedPlaces.push(place[i]);
 					}
 				}
@@ -108,8 +112,8 @@ function findLocationsBasedOnRadius(lat, lng, distance){
 	var radius = 6371;//radius at equater = 6378, at poles 6356
 	var results = {};
 	var latDegrees = Math.degrees(distance/radius);
-	console.log(lat, lng);
-	console.log(latDegrees);
+	//console.log(lat, lng);
+	//console.log(latDegrees);
 
 	results.maxLat = (lat*1) + (latDegrees*1);//max
 	results.minLat = lat - latDegrees;//min
@@ -130,7 +134,7 @@ function calculateDistance (lat1, lat2, lng1, lng2){
 
 	var distance = Math.acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(lng1 - lng2));
 
-	console.log(6371 * distance);
+	//console.log(6371 * distance);
 	return 6371 * distance;
 }
 

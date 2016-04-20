@@ -16,7 +16,8 @@ function initMap() {
 	map = new google.maps.Map(document.getElementById('map'), {
 		center: startPoint,
 		zoom: 12,
-		disableDefaultUI: true
+		disableDefaultUI: true,
+		zoomControl: true
 	});
 	view.addSearch();
 
@@ -279,10 +280,10 @@ var ViewModel = function(){
 	};
 
 	/**
-	 * Get places by group from database
+	 * Get places by group and/or type from database
 	 */
-	self.readFileByGroup = function(group, callback){
-		var data = {"group" : group};
+	self.readFileByGroupAndType = function(group, type, callback){
+		var data = {"group" : group, "type" : type};
 		$.ajax({
 			type:'GET',
 			url: 'http://localhost:3000/readFile',
@@ -292,25 +293,7 @@ var ViewModel = function(){
 			callback(JSON.parse(data));
 		})
 		.fail(function(){
-			alert("Error, no results for "+group+" found, please try again");
-		});
-	};
-
-	/**
-	 * Get places by type from database
-	 */
-	self.readFileByType = function(type, callback){
-		var data = {"type" : type};
-		$.ajax({
-			type:'GET',
-			url: 'http://localhost:3000/readFile',
-			data: data,
-		})
-		.done(function(data){
-			callback(JSON.parse(data));
-		})
-		.fail(function(){
-			alert("Error, no results for "+type+" found, please try again");
+			alert("Error, no results found, please try again");
 		});
 	};
 
@@ -380,10 +363,8 @@ var ViewModel = function(){
 
 		if(!self.getGroup() && !self.getType()){
 			self.readFileByRadius(startPoint.lat, startPoint.lng, radius, self.readFileCallBack);
-		}else if(self.getGroup()){
-			self.readFileByGroup(self.getGroup(), self.readFileCallBack);
-		}else if(self.getType()){
-			self.readFileByType(self.getType(), self.readFileCallBack);
+		}else{
+			self.readFileByGroupAndType(self.getGroup(), self.getType(), self.readFileCallBack);
 		}
 	};
 
