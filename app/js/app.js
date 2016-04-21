@@ -33,6 +33,8 @@ function initMap() {
 		view.readFileByRadius(pos.lat, pos.lng, radius, view.readFileCallBack);
 	});
 
+	view.pageSetUp();
+
 }
 
 /**
@@ -245,11 +247,7 @@ var ViewModel = function(){
 		placeObject.type = self.placeType();
 		placeObject.notes = self.placeNote();
 		self.writeFile(function(){
-			if(self.listView().length !== 0){
-				//self.fetchPlaceDetails();
-				self.listView.push(new Place(placeObject.name, placeObject.position, placeObject.latitude, placeObject.longitude, placeObject.type, placeObject.notes, placeObject.address));
-
-			}
+			self.listView.push(new Place(placeObject.name, placeObject.position, placeObject.latitude, placeObject.longitude, placeObject.type, placeObject.notes, placeObject.address));
 		});
 
 		self.showOverlay(false);
@@ -314,6 +312,22 @@ var ViewModel = function(){
 		})
 		.done(function(data){
 			callback(JSON.parse(data));
+		})
+		.fail(function(){
+			alert("Error, no results found, please try again");
+		});
+	};
+
+	self.pageSetUp = function(){
+		//var data = {"lat" : lat, "lng": lng, "distance": distance};
+		$.ajax({
+			type:'GET',
+			url: 'http://localhost:3000/pageSetUp',
+			//data: data,
+		})
+		.done(function(data){
+			console.log(data);
+			//callback(JSON.parse(data));
 		})
 		.fail(function(){
 			alert("Error, no results found, please try again");

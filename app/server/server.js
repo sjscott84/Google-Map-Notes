@@ -12,6 +12,33 @@ app.use(bodyParser.json());
 app.use(cors());
 app.options('*', cors());
 
+app.get('/pageSetUp', function(request, response){
+	var returnedGroups = [];
+	var returnedTypes = [];
+	var returnedData = {};
+
+	fs.readFile(file, 'utf8', function(err, data){
+		if(err){
+			console.log(err);
+		}else{
+			var parsedData = JSON.parse(data);
+			var place = parsedData.places;
+			for(var i=0; i<place.length; i++){
+				if(returnedGroups.indexOf(place[i]["group"]) === -1){
+					returnedGroups.push(place[i]["group"]);
+				}
+				if(returnedTypes.indexOf(place[i]["type"]) === -1){
+					returnedTypes.push(place[i]["type"]);
+				}
+			}
+			returnedData.groups = returnedGroups;
+			returnedData.types = returnedTypes;
+
+			response.send(JSON.stringify(returnedData));
+		}
+	});
+})
+
 app.get('/readFile', function(request, response){
 
 	var lat = request.query.lat;
