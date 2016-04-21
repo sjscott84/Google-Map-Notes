@@ -33,7 +33,14 @@ function initMap() {
 		view.readFileByRadius(pos.lat, pos.lng, radius, view.readFileCallBack);
 	});
 
-	view.pageSetUp();
+	view.pageSetUp(function(data){
+		for(var i=0; i<data.groups.length; i++){
+			view.availableGroups.push(data.groups[i]);
+		}
+		for(var i=0; i<data.types.length; i++){
+			view.availableTypes.push(data.types[i]);
+		}
+	});
 
 }
 
@@ -125,6 +132,8 @@ var ViewModel = function(){
 	self.listView = ko.observableArray([]);
 	self.showMenuList = ko.observable(false);
 	self.currentPlace = ko.observable();
+	self.availableGroups = ko.observableArray([""]);
+	self.availableTypes = ko.observableArray([""]);
 
 	/**
  	* Add search functionality
@@ -318,7 +327,7 @@ var ViewModel = function(){
 		});
 	};
 
-	self.pageSetUp = function(){
+	self.pageSetUp = function(callback){
 		//var data = {"lat" : lat, "lng": lng, "distance": distance};
 		$.ajax({
 			type:'GET',
@@ -326,8 +335,8 @@ var ViewModel = function(){
 			//data: data,
 		})
 		.done(function(data){
-			console.log(data);
-			//callback(JSON.parse(data));
+			//console.log(data);
+			callback(JSON.parse(data));
 		})
 		.fail(function(){
 			alert("Error, no results found, please try again");
