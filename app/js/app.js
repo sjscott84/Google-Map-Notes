@@ -257,6 +257,12 @@ var ViewModel = function(){
 		placeObject.notes = self.placeNote();
 		self.writeFile(function(){
 			self.listView.push(new Place(placeObject.name, placeObject.position, placeObject.latitude, placeObject.longitude, placeObject.type, placeObject.notes, placeObject.address));
+			if(self.availableGroups.indexOf(placeObject.group) === -1){
+				self.availableGroups.push(placeObject.group);
+			}
+			if(self.availableTypes.indexOf(placeObject.type) === -1){
+				self.availableTypes.push(placeObject.type);
+			}
 		});
 
 		self.showOverlay(false);
