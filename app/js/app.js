@@ -246,7 +246,9 @@ var ViewModel = function(){
 		placeObject.notes = self.placeNote();
 		self.writeFile(function(){
 			if(self.listView().length !== 0){
-				self.fetchPlaceDetails();
+				//self.fetchPlaceDetails();
+				self.listView.push(new Place(placeObject.name, placeObject.position, placeObject.latitude, placeObject.longitude, placeObject.type, placeObject.notes, placeObject.address));
+
 			}
 		});
 
@@ -350,8 +352,12 @@ var ViewModel = function(){
 	 * Open overlay to get saved places by radius
 	 */
 	self.loadSavedPlacesByRadius = function(){
-		self.removeExisitingPlaces();
-		self.readFileByRadius(startPoint.lat, startPoint.lng, radius, view.readFileCallBack);
+		if(!pos){
+			alert("Unable to find current location, please search by group and type");
+		}else{
+			self.removeExisitingPlaces();
+			self.readFileByRadius(pos.lat, pos.lng, radius, view.readFileCallBack);
+		}
 	};
 
 	/**
@@ -360,12 +366,12 @@ var ViewModel = function(){
 	self.fetchPlaceDetails = function(){
 		self.removeExisitingPlaces();
 		self.showSavedGroupOverlay(false);
-		self.showSavedTypeOverlay(false);
 		self.saveButton(false);
 		self.removeButton(true);
+		self.listView([]);
 
 		if(!self.getGroup() && !self.getType()){
-			self.readFileByRadius(startPoint.lat, startPoint.lng, radius, self.readFileCallBack);
+			self.readFileByRadius(pos.lat, pos.lng, radius, self.readFileCallBack);
 		}else{
 			self.readFileByGroupAndType(self.getGroup(), self.getType(), self.readFileCallBack);
 		}
@@ -391,7 +397,6 @@ var ViewModel = function(){
 	 */
 	self.openMenu = function(){
 		self.showSavedGroupOverlay(false);
-		self.showSavedTypeOverlay(false);
 		if(!self.showMenuList()){
 			map.controls[google.maps.ControlPosition.TOP_LEFT].clear(menu);
 			map.controls[google.maps.ControlPosition.TOP_CENTER].clear(input);

@@ -20,9 +20,9 @@
 
 		<div id="menuList" data-bind="visible: showMenuList">
 			<ul>
+				<li onclick="view.loadSavedPlacesByGroup()">Get Saved Places By Group and/or Type</li>
+				<li onclick="view.loadSavedPlacesByRadius()">Show saved places by current location</li>
 				<li onclick="view.removeExisitingPlaces()">Remove Saved Places</li>
-				<li onclick="view.loadSavedPlacesByGroup()">Get Saved Places</li>
-				<li onclick="view.loadSavedPlacesByRadius()">Show saved places by location</li>
 				<!--<li onclick="view.loadSavedPlacesByType()">Show saved places by type</li>-->
 				<span class="glyphicon glyphicon-remove" id="menuClose" onclick="view.closeMenu()"></span>
 			</ul>
