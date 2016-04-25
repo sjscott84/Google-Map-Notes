@@ -129,22 +129,54 @@ var ViewModel = function(){
 	self.placeType = ko.observable("");
 	self.getGroup = ko.observable("");
 	self.getType = ko.observable("");
-	self.listView = ko.observableArray([]);
+	self.listView = ko.observableArray([]);	
 	self.showMenuList = ko.observable(false);
 	self.currentPlace = ko.observable();
 	self.availableGroups = ko.observableArray([""]);
 	self.availableTypes = ko.observableArray([""]);
 	self.showSavedGroups = ko.observableArray([]);
+	self.showSavedTypes = ko.observableArray([]);
+	self.selectedGroupItem = ko.observable();
+	self.selectedTypeItem = ko.observable();
+	self.selectedGroupItemVisible = ko.observable(false);
+	self.selectedTypeItemVisible = ko.observable(false);
 
 	self.getSavedGroups = function(){
+		self.selectedGroupItemVisible(true);
 		self.showSavedGroups([]);
 		var entry = self.placeGroup().length;
 		for(var i = 0; i<self.availableGroups().length; i++){
 			if(self.availableGroups()[i].slice(0, entry) === self.placeGroup()){
 				self.showSavedGroups.push(self.availableGroups()[i]);
-				console.log(self.showSavedGroups());
 			}
 		}
+	};
+
+	self.getSavedTypes = function(){
+		self.selectedTypeItemVisible(true);
+		self.showSavedTypes([]);
+		var entry = self.placeType().length;
+		for(var i = 0; i<self.availableTypes().length; i++){
+			if(self.availableTypes()[i].slice(0, entry) === self.placeType()){
+				self.showSavedTypes.push(self.availableTypes()[i]);
+			}
+		}
+	};
+
+	self.useSelectedItem = function(){
+		if(self.selectedGroupItem()){
+			console.log("click");
+			self.placeGroup(self.selectedGroupItem());
+			self.selectedGroupItemVisible(false);
+		}
+		if(self.selectedTypeItem()){
+			self.placeType(self.selectedTypeItem())
+			self.selectedTypeItemVisible(false);
+		}
+	};
+
+	self.closeGetSavedTypes = function(){
+		self.selectedTypeItemVisible(false);
 	}
 
 	/**

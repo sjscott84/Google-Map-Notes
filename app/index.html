@@ -31,11 +31,13 @@
 		<div id="inputBox" data-bind="visible: showOverlay">
 			<b data-bind="text: placeName"></b>
 			<p>Group: </p>
-			<input class="notes" type="text" data-bind="textInput: placeGroup" onkeyup="view.getSavedGroups()">
+			<input class="notes" type="text" data-bind="textInput: placeGroup" onkeyup="view.getSavedGroups()"><br>
+			<select multiple="multiple" height="5" data-bind="options:showSavedGroups, selectedOptions:selectedGroupItem, visible: selectedGroupItemVisible" onclick="view.useSelectedItem()"></select>
 			<p>Type: </p>
-			<input class="notes" type="text" data-bind="textInput: placeType">
+			<input class="notes" type="text" data-bind="textInput: placeType" onkeyup="view.getSavedTypes()"><br>
+			<select multiple="multiple" height="5" data-bind="options:showSavedTypes, selectedOptions:selectedTypeItem, visible: selectedTypeItemVisible" onclick="view.useSelectedItem()"></select>
 			<p>Notes: </p>
-			<input class="notes" type="text" data-bind="textInput: placeNote">
+			<input class="notes" type="text" data-bind="textInput: placeNote" onclick="view.closeGetSavedTypes()">
 			<p data-bind="text: placeGroup"></p>
 			<p data-bind="text: placeType"></p>
 			<p data-bind="text: placeNote"></p>
