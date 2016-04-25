@@ -31,7 +31,7 @@
 		<div id="inputBox" data-bind="visible: showOverlay">
 			<b data-bind="text: placeName"></b>
 			<p>Group: </p>
-			<input class="notes" type="text" data-bind="textInput: placeGroup">
+			<input class="notes" type="text" data-bind="textInput: placeGroup" onkeyup="view.getSavedGroups()">
 			<p>Type: </p>
 			<input class="notes" type="text" data-bind="textInput: placeType">
 			<p>Notes: </p>

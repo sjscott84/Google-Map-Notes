@@ -134,6 +134,18 @@ var ViewModel = function(){
 	self.currentPlace = ko.observable();
 	self.availableGroups = ko.observableArray([""]);
 	self.availableTypes = ko.observableArray([""]);
+	self.showSavedGroups = ko.observableArray([]);
+
+	self.getSavedGroups = function(){
+		self.showSavedGroups([]);
+		var entry = self.placeGroup().length;
+		for(var i = 0; i<self.availableGroups().length; i++){
+			if(self.availableGroups()[i].slice(0, entry) === self.placeGroup()){
+				self.showSavedGroups.push(self.availableGroups()[i]);
+				console.log(self.showSavedGroups());
+			}
+		}
+	}
 
 	/**
  	* Add search functionality
