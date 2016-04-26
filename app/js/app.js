@@ -165,12 +165,11 @@ var ViewModel = function(){
 
 	self.useSelectedItem = function(){
 		if(self.selectedGroupItem()){
-			console.log("click");
-			self.placeGroup(self.selectedGroupItem());
+			self.placeGroup(self.selectedGroupItem().toString());
 			self.selectedGroupItemVisible(false);
 		}
 		if(self.selectedTypeItem()){
-			self.placeType(self.selectedTypeItem())
+			self.placeType(self.selectedTypeItem().toString())
 			self.selectedTypeItemVisible(false);
 		}
 	};
@@ -227,7 +226,6 @@ var ViewModel = function(){
 				});
 
 				google.maps.event.addListener(marker, 'click', function() {
-					console.log('click');
 					self.addInfoWindow(place.name, place.formatted_address, 'type', 'note', marker);
 				});
 
