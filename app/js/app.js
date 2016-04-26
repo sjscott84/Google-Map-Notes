@@ -259,7 +259,7 @@ var ViewModel = function(){
 		});
 
 		if(!nameExists){
-			contents = '<b>'+name+'</b><br>'+address+'<br><span><button type="button" onclick="view.saveThisPlace()">Save Place</button><button type="button" onclick="view.removeThisPlace()">Remove Place</button></span>';
+			contents = '<b>'+name+'</b><br>'+address+'<br><span><button class="myButton" id="leftButton" type="button" onclick="view.saveThisPlace()">Save Place</button><button class="myButton" id="rightButton" type="button" onclick="view.removeThisPlace()">Remove Place</button></span>';
 		}
 
 		if(infoWindow){
