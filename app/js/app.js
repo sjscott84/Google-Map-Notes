@@ -478,6 +478,8 @@ var ViewModel = function(){
 			data.forEach(function(value){
 				self.listView.push(new Place(value.name, value.position, value.latitude, value.longitude, value.type, value.notes, value.address));
 				self.fitBoundsToVisibleMarkers();
+				var zoom = map.getZoom();
+				map.setZoom(zoom > 15 ? 15 : zoom);
 			});
 		}else{
 			alert("Error, no results found, please try again");
