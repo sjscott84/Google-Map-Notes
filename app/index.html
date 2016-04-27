@@ -32,12 +32,12 @@
 			<b data-bind="text: placeName"></b>
 			<p>Group: </p>
 			<input class="notes" type="text" data-bind="textInput: placeGroup" onkeyup="view.getSavedGroups()"><br>
-			<select multiple="multiple" height="5" data-bind="options:showSavedGroups, selectedOptions:selectedGroupItem, visible: selectedGroupItemVisible" onclick="view.useSelectedItem()"></select>
+			<select class="notes" multiple="multiple" height="5" data-bind="options:showSavedGroups, selectedOptions:selectedGroupItem, visible: selectedGroupItemVisible" onclick="view.useSelectedItem()"></select>
 			<p>Type: </p>
-			<input class="notes" type="text" data-bind="textInput: placeType" onkeyup="view.getSavedTypes()"><br>
-			<select multiple="multiple" height="5" data-bind="options:showSavedTypes, selectedOptions:selectedTypeItem, visible: selectedTypeItemVisible" onclick="view.useSelectedItem()"></select>
+			<input class="notes" type="text" data-bind="textInput: placeType" onclick="view.closeGetSavedGroupsOrTypes()" onkeyup="view.getSavedTypes()"><br>
+			<select class="notes" multiple="multiple" height="5" data-bind="options:showSavedTypes, selectedOptions:selectedTypeItem, visible: selectedTypeItemVisible" onclick="view.useSelectedItem()"></select>
 			<p>Notes: </p>
-			<input class="notes" type="text" data-bind="textInput: placeNote" onclick="view.closeGetSavedTypes()">
+			<input class="notes" type="text" data-bind="textInput: placeNote" onclick="view.closeGetSavedGroupsOrTypes()">
 			<p data-bind="text: placeGroup"></p>
 			<p data-bind="text: placeType"></p>
 			<p data-bind="text: placeNote"></p>

@@ -188,8 +188,13 @@ var ViewModel = function(){
 	/**
 	 * Close the type list when entering a note when adding a new place
 	 */
-	self.closeGetSavedTypes = function(){
-		self.selectedTypeItemVisible(false);
+	self.closeGetSavedGroupsOrTypes = function(){
+		if(self.selectedGroupItemVisible(true)){
+			self.selectedGroupItemVisible(false);
+		}
+		if(self.selectedTypeItemVisible(true)){
+			self.selectedTypeItemVisible(false);
+		}
 	}
 
 	/**
