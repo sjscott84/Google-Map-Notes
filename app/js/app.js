@@ -477,12 +477,11 @@ var ViewModel = function(){
 		if(data.length !== 0){
 			data.forEach(function(value){
 				self.listView.push(new Place(value.name, value.position, value.latitude, value.longitude, value.type, value.notes, value.address));
+				self.fitBoundsToVisibleMarkers();
 			});
 		}else{
 			alert("Error, no results found, please try again");
 		}
-
-		self.fitBoundsToVisibleMarkers();
 	};
 
 	/**
