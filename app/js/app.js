@@ -40,6 +40,8 @@ function initMap() {
 		for(var i=0; i<data.types.length; i++){
 			view.availableTypes.push(data.types[i]);
 		}
+		view.availableGroups.sort();
+		view.availableTypes.sort();
 	});
 
 }
@@ -141,6 +143,9 @@ var ViewModel = function(){
 	self.selectedGroupItemVisible = ko.observable(false);
 	self.selectedTypeItemVisible = ko.observable(false);
 
+	/**
+	 * Display a list of groups already in database that matched the current input when adding a new place
+	 */
 	self.getSavedGroups = function(){
 		self.selectedGroupItemVisible(true);
 		self.showSavedGroups([]);
@@ -152,6 +157,9 @@ var ViewModel = function(){
 		}
 	};
 
+	/**
+	 * Display a list of types already in database that matched the current input when adding a new place
+	 */
 	self.getSavedTypes = function(){
 		self.selectedTypeItemVisible(true);
 		self.showSavedTypes([]);
@@ -163,6 +171,9 @@ var ViewModel = function(){
 		}
 	};
 
+	/**
+	 * Use the selected item from the group or type list when adding a new place
+	 */
 	self.useSelectedItem = function(){
 		if(self.selectedGroupItem()){
 			self.placeGroup(self.selectedGroupItem().toString());
@@ -174,6 +185,9 @@ var ViewModel = function(){
 		}
 	};
 
+	/**
+	 * Close the type list when entering a note when adding a new place
+	 */
 	self.closeGetSavedTypes = function(){
 		self.selectedTypeItemVisible(false);
 	}
@@ -375,6 +389,9 @@ var ViewModel = function(){
 		});
 	};
 
+	/**
+	 * Get exisiting groups and types from database to use in searches and predictive input
+	 */
 	self.pageSetUp = function(callback){
 		//var data = {"lat" : lat, "lng": lng, "distance": distance};
 		$.ajax({
