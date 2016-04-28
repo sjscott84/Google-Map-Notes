@@ -150,9 +150,10 @@ var ViewModel = function(){
 		self.selectedGroupItemVisible(true);
 		self.showSavedGroups([]);
 		var entry = self.placeGroup().length;
-		for(var i = 0; i<self.availableGroups().length; i++){
-			if(self.availableGroups()[i].slice(0, entry) === self.placeGroup()){
-				self.showSavedGroups.push(self.availableGroups()[i]);
+		for(var j = 0; j<self.availableGroups().length; j++){
+			var what = self.availableGroups()[j].slice(0, entry);
+			if(self.placeGroup().match(new RegExp([what], 'i'))){
+				self.showSavedGroups.push(self.availableGroups()[j]);
 			}
 		}
 	};
@@ -164,9 +165,10 @@ var ViewModel = function(){
 		self.selectedTypeItemVisible(true);
 		self.showSavedTypes([]);
 		var entry = self.placeType().length;
-		for(var i = 0; i<self.availableTypes().length; i++){
-			if(self.availableTypes()[i].slice(0, entry) === self.placeType()){
-				self.showSavedTypes.push(self.availableTypes()[i]);
+		for(var j = 0; j<self.availableTypes().length; j++){
+			var what = self.availableTypes()[j].slice(0, entry);
+			if(self.placeType().match(new RegExp([what], 'i'))){
+				self.showSavedTypes.push(self.availableTypes()[j]);
 			}
 		}
 	};
@@ -454,7 +456,7 @@ var ViewModel = function(){
 	};
 
 	/**
-	 * Choose appropriate search method for places (be group, type or radius)
+	 * Choose appropriate search method for places (by group, type or radius)
 	 */
 	self.fetchPlaceDetails = function(){
 		self.removeExisitingPlaces();

@@ -143,8 +143,6 @@ function findLocationsBasedOnRadius(lat, lng, distance){
 	var radius = 6371;//radius at equater = 6378, at poles 6356
 	var results = {};
 	var latDegrees = Math.degrees(distance/radius);
-	//console.log(lat, lng);
-	//console.log(latDegrees);
 
 	results.maxLat = (lat*1) + (latDegrees*1);//max
 	results.minLat = lat - latDegrees;//min
@@ -165,43 +163,5 @@ function calculateDistance (lat1, lat2, lng1, lng2){
 
 	var distance = Math.acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(lng1 - lng2));
 
-	//console.log(6371 * distance);
 	return 6371 * distance;
 }
-
-// find file testfile.txt does it exist
-
-/*fs.stat(test, function(err, stats){
-	var fileExists = false;//.....
-	if(err){
-		console.log(err);
-	}else{
-		fileExists = true;
-		console.log("file exists = " + fileExists);
-	}
-});
-
-fs.readFile(test, 'utf8', function(err, data){
-	if(err){
-		console.log(err);
-	}else{
-		console.log(data);
-	}
-});
-
-fs.writeFile(test, "you're wonderful", function(err){
-	if(err){
-		console.log(err);
-	}else{
-		console.log("saved");
-	}
-});
-
-fs.readFile(test, 'utf8', function(err, data){
-	if(err){
-		console.log(err);
-	}else{
-		console.log(data);
-	}
-});
-*/
