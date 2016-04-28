@@ -67,13 +67,17 @@ app.get('/readFile', function(request, response){
 						//returnedPlaces.push(parsedData.places[i]);
 					}
 				}
-			}else if(group && !type){
+			}else if(group === "All" && type === "All"){
+				for(var i = 0; i<place.length; i++){
+					returnedPlaces.push(place[i]);
+				}
+			}else if(group && type === "All"){
 				for(var i = 0; i<place.length; i++){
 					if(place[i]["group"] === group){
 						returnedPlaces.push(place[i]);
 					}
 				}
-			}else if(!group && type){
+			}else if(group === "All" && type){
 				for(var i = 0; i<place.length; i++){
 					if(place[i]["type"] === type){
 						returnedPlaces.push(place[i]);
