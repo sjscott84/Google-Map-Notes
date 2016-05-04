@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Google Map Notes</title>
+	<meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0">
+	<!--build:css css/styles.min.css-->
+	<link href="css/app.css" rel="stylesheet">
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<!--endbuild-->
+</head>
+
+<body>
+
+	<div id="map"></div>
+
+		<button type="button" class="btn btn-default btn-lg">
+			<span class="glyphicon glyphicon-align-justify" id="menu" onclick="view.openMenu()"></span>
+		</button>
+		<input id="pac-input" class="controls" type="text" placeholder="Search Box">
+
+		<div id="menuList" data-bind="visible: showMenuList">
+			<ul>
+				<li onclick="view.loadSavedPlacesByGroup()">Get Saved Places By Group and/or Type</li>
+				<li onclick="view.loadSavedPlacesByRadius()">Show saved places by current location</li>
+				<li onclick="view.removeExisitingPlaces()">Remove Saved Places</li>
+				<!--<li onclick="view.loadSavedPlacesByType()">Show saved places by type</li>-->
+				<span class="glyphicon glyphicon-remove" id="menuClose" onclick="view.closeMenu()"></span>
+			</ul>
+		</div>
+
+		<div id="inputBox" data-bind="visible: showOverlay">
+			<b data-bind="text: placeName"></b>
+			<p>Group: </p>
+			<input class="notes" type="text" data-bind="textInput: placeGroup" onkeyup="view.getSavedGroups()"><br>
+			
+				<select class="notes" multiple="multiple" height="5" data-bind="options:showSavedGroups, selectedOptions:selectedGroupItem, visible: selectedGroupItemVisible" onclick="view.useSelectedItem()"></select>
+
+			<p>Type: </p>
+			<input class="notes" type="text" data-bind="textInput: placeType" onclick="view.closeGetSavedGroupsOrTypes()" onkeyup="view.getSavedTypes()"><br>
+			<select class="notes" multiple="multiple" height="5" data-bind="options:showSavedTypes, selectedOptions:selectedTypeItem, visible: selectedTypeItemVisible" onclick="view.useSelectedItem()"></select>
+			<p>Notes: </p>
+			<input class="notes" type="text" data-bind="textInput: placeNote" onclick="view.closeGetSavedGroupsOrTypes()">
+			<p data-bind="text: placeGroup"></p>
+			<p data-bind="text: placeType"></p>
+			<p data-bind="text: placeNote"></p>
+			<span>
+				<button class="myButton" type="button" onclick="view.savePlace()">Save</button>
+				<button class="myButton" type="button" onclick="view.dontSavePlace()">Remove</button>
+			</span>
+		</div>
+
+		<div id="getSaved" data-bind="visible: showSavedGroupOverlay">
+			<p>Which group would you like to see?</p>
+			<!--<input class="notes" type="text" data-bind="textInput: getGroup">-->
+			<select data-bind="options: availableGroups, value: getGroup"></select>
+			<p>Which type would you like to see?</p>
+			<!--<input class="notes" type="text" data-bind="textInput: getType">-->
+			<select data-bind="options: availableTypes, value: getType"></select>
+			<br>
+			<button class="myButton" type="button" onclick="view.fetchPlaceDetails()">Get <span data-bind="text: getGroup"></span> Places</button>
+		</div>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<!--build:js js/main.min.js -->
+	<script src="js/knockout-3.4.0.js"></script>
+	<script src="js/app.js"></script>
+
+	<!--endbuild -->
+	<!--<script type="text/javascript" src="https://oauth.googlecode.com/svn/code/javascript/sha1.js"></script>-->
+	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCZnUzSkNCumO4XVfZ9V26yLh9Y__14C9U&libraries=places&callback=initMap" onerror="onLoadError()"></script>
+</body>
+
+</html>
