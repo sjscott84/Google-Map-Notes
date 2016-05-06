@@ -2,22 +2,18 @@ html, body {
 	height: 100%;
 	margin: 0;
 	padding: 0;
+	-webkit-text-size-adjust: none;
 }
 
 #map {
 	height: 100%;
+	width: 100%;
 }
 
-.gm-style-iw {
-	max-height: 522px;
-	min-width: 100px;
+@-ms-viewport{
+  width: device-width;
 }
 
-#contents {
-	max-height: 522px !important;
-	min-width: 100px !important;
-	color: red;
-}
 .controls {
 	margin-top: 10px;
 	border: 1px solid transparent;
@@ -28,6 +24,15 @@ html, body {
 	outline: none;
 	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
+
+#menu {
+	height: 28px;
+	width: 28px;
+	padding:1px 1px 1px 1px;
+	margin-left: 20px;
+	margin-top: 10px;
+}
+
 
 #pac-input, #removeSavedPlaces, #seeSavedPlaces {
 	background-color: #fff;

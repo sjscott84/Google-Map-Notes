@@ -125,7 +125,6 @@ var ViewModel = function(){
 	self.placeNote = ko.observable("");
 	self.showOverlay = ko.observable(false);
 	self.showSavedGroupOverlay = ko.observable(false);
-	self.showSavedTypeOverlay = ko.observable(false);
 	self.saveButton = ko.observable(true);
 	self.removeButton = ko.observable(false);
 	self.placeName = ko.observable("");
@@ -283,7 +282,7 @@ var ViewModel = function(){
 
 		view.listView().forEach(function(place){
 			if(place.name === name){
-				contents = '<div id="contents"><b>'+name+'</b><br>'+address+'<br><b>What: </b>'+type+'<br><b>Notes: </b>'+note+'<br><a onclick="view.openGoogleMap()">View on google maps</a></div>';
+				contents = '<div class="infowindow"<b>'+name+'</b><br>'+address+'<br><b>What: </b>'+type+'<br><b>Notes: </b>'+note+'<br><a onclick="view.openGoogleMap()">View on google maps</a></div>';
 				nameExists = true;
 			}
 		});
@@ -291,8 +290,6 @@ var ViewModel = function(){
 		if(!nameExists){
 			contents = '<b>'+name+'</b><br>'+address+'<br><span><button class="myButton" id="leftButton" type="button" onclick="view.saveThisPlace()">Save Place</button><button class="myButton" id="rightButton" type="button" onclick="view.removeThisPlace()">Remove Place</button></span>';
 		}
-
-		//wrapper.innerHTML = contents;
 
 		infoWindow.setContent(contents);
 
@@ -435,21 +432,9 @@ var ViewModel = function(){
 	 * Open overlay to get saved places by group
 	 */
 	self.loadSavedPlacesByGroup = function(){
-		if(infoWindow){
-			contents = undefined;
-			infoWindow.setContent();
-		}
 		self.removeExisitingPlaces();
+		//self.readFileByGroupAndType("SF", "Attraction", self.readFileCallBack);
 		self.showSavedGroupOverlay(true);
-	};
-
-	/**
-	 * Open overlay to get saved places by type
-	 */
-	self.loadSavedPlacesByType = function(){
-		self.removeExisitingPlaces();
-		self.showSavedTypeOverlay(true);
-
 	};
 
 	/**
@@ -468,8 +453,8 @@ var ViewModel = function(){
 	 * Choose appropriate search method for places (by group, type or radius)
 	 */
 	self.fetchPlaceDetails = function(){
-		self.removeExisitingPlaces();
 		self.showSavedGroupOverlay(false);
+		self.removeExisitingPlaces();
 		self.saveButton(false);
 		self.removeButton(true);
 		self.listView([]);
@@ -489,8 +474,10 @@ var ViewModel = function(){
 			data.forEach(function(value){
 				self.listView.push(new Place(value.name, value.position, value.latitude, value.longitude, value.type, value.notes, value.address));
 				self.fitBoundsToVisibleMarkers();
-				var zoom = map.getZoom();
-				map.setZoom(zoom > 15 ? 15 : zoom);
+				//function(){
+					//var zoom = map.getZoom();
+					//map.setZoom(zoom > 15 ? 15 : zoom);
+				//});
 			});
 		}else{
 			alert("Error, no results found, please try again");
@@ -501,7 +488,11 @@ var ViewModel = function(){
 	 * Open menu
 	 */
 	self.openMenu = function(){
-		self.showSavedGroupOverlay(false);
+		if(infoWindow){
+			contents = undefined;
+			infoWindow.setContent();
+		}
+		//self.showSavedGroupOverlay(false);
 		if(!self.showMenuList()){
 			map.controls[google.maps.ControlPosition.TOP_LEFT].clear(menu);
 			map.controls[google.maps.ControlPosition.TOP_CENTER].clear(input);
