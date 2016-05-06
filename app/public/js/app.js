@@ -4,6 +4,7 @@ var map,
 	view,
 	marker,
 	infoWindow,
+	contents,
 	testData,
 	placeObject = {},
 	pos,
@@ -264,6 +265,10 @@ var ViewModel = function(){
 			});
 
 		});
+
+		infoWindow = new google.maps.InfoWindow({
+			disableAutoPan: true
+		});
 	};
 
 	/**
@@ -271,11 +276,14 @@ var ViewModel = function(){
 	*/
 	self.addInfoWindow = function(name, address, type, note, marker){
 		var nameExists = false;
-		var contents;
+
+		if(infoWindow){
+			infoWindow.close();
+		}
 
 		view.listView().forEach(function(place){
 			if(place.name === name){
-				contents = '<b>'+name+'</b><br>'+address+'<br><b>What: </b>'+type+'<br><b>Notes: </b>'+note+'<br><a onclick="view.openGoogleMap()">View on google maps</a>';
+				contents = '<div id="contents"><b>'+name+'</b><br>'+address+'<br><b>What: </b>'+type+'<br><b>Notes: </b>'+note+'<br><a onclick="view.openGoogleMap()">View on google maps</a></div>';
 				nameExists = true;
 			}
 		});
@@ -284,14 +292,9 @@ var ViewModel = function(){
 			contents = '<b>'+name+'</b><br>'+address+'<br><span><button class="myButton" id="leftButton" type="button" onclick="view.saveThisPlace()">Save Place</button><button class="myButton" id="rightButton" type="button" onclick="view.removeThisPlace()">Remove Place</button></span>';
 		}
 
-		if(infoWindow){
-			infoWindow.close();
-		}
+		//wrapper.innerHTML = contents;
 
-		infoWindow = new google.maps.InfoWindow({
-			content: contents,
-			disableAutoPan: true
-		});
+		infoWindow.setContent(contents);
 
 		infoWindow.open(map, marker);
 	};
@@ -432,6 +435,10 @@ var ViewModel = function(){
 	 * Open overlay to get saved places by group
 	 */
 	self.loadSavedPlacesByGroup = function(){
+		if(infoWindow){
+			contents = undefined;
+			infoWindow.setContent();
+		}
 		self.removeExisitingPlaces();
 		self.showSavedGroupOverlay(true);
 	};

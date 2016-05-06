@@ -8,6 +8,16 @@ html, body {
 	height: 100%;
 }
 
+.gm-style-iw {
+	max-height: 522px;
+	min-width: 100px;
+}
+
+#contents {
+	max-height: 522px !important;
+	min-width: 100px !important;
+	color: red;
+}
 .controls {
 	margin-top: 10px;
 	border: 1px solid transparent;
