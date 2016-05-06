@@ -109,6 +109,7 @@ var Place = function (name, position, lat, lng, type, note, address){
 	google.maps.event.addListener(this.marker, 'click', function() {
 		view.addInfoWindow(self.name, self.address, self.type, self.note, self.marker);
 		view.currentPlace(self);
+		map.setCenter(self.marker.getPosition());
 	});
 };
 
@@ -288,7 +289,8 @@ var ViewModel = function(){
 		}
 
 		infoWindow = new google.maps.InfoWindow({
-			content: contents
+			content: contents,
+			disableAutoPan: true
 		});
 
 		infoWindow.open(map, marker);
