@@ -28,7 +28,6 @@ function initMap() {
 	map.controls[google.maps.ControlPosition.TOP_LEFT].push(menu);
 	map.controls[google.maps.ControlPosition.LEFT_CENTER].push(menuList);
 	map.controls[google.maps.ControlPosition.TOP_RIGHT].push(inputBox);
-	//map.controls[google.maps.ControlPosition.LEFT_TOP].push(getSaved);
 
 	// Try HTML5 geolocation.
 	geolocateLocation(function(){
@@ -125,7 +124,6 @@ var ViewModel = function(){
 
 	self.placeNote = ko.observable("");
 	self.showOverlay = ko.observable(false);
-	//self.showSavedGroupOverlay = ko.observable(false);
 	self.saveButton = ko.observable(true);
 	self.removeButton = ko.observable(false);
 	self.placeName = ko.observable("");
@@ -184,7 +182,7 @@ var ViewModel = function(){
 			self.selectedGroupItemVisible(false);
 		}
 		if(self.selectedTypeItem()){
-			self.placeType(self.selectedTypeItem().toString())
+			self.placeType(self.selectedTypeItem().toString());
 			self.selectedTypeItemVisible(false);
 		}
 	};
@@ -199,7 +197,7 @@ var ViewModel = function(){
 		if(self.selectedTypeItemVisible(true)){
 			self.selectedTypeItemVisible(false);
 		}
-	}
+	};
 
 	/**
  	* Add search functionality
@@ -402,14 +400,11 @@ var ViewModel = function(){
 	 * Get exisiting groups and types from database to use in searches and predictive input
 	 */
 	self.pageSetUp = function(callback){
-		//var data = {"lat" : lat, "lng": lng, "distance": distance};
 		$.ajax({
 			type:'GET',
 			url: 'http://192.168.0.2:3000/pageSetUp',
-			//data: data,
 		})
 		.done(function(data){
-			//console.log(data);
 			callback(JSON.parse(data));
 		})
 		.fail(function(){
@@ -432,11 +427,8 @@ var ViewModel = function(){
 	 * Open overlay to get saved places by group
 	 */
 	self.loadSavedPlacesByGroup = function(){
-		//var searchGroup = document.getElementById('getSaved');
 		self.removeExisitingPlaces();
-		//self.readFileByGroupAndType("SF", "Attraction", self.readFileCallBack);
 		map.controls[google.maps.ControlPosition.LEFT_TOP].push(getSavedOverlay);
-		//self.showSavedGroupOverlay(true);
 	};
 
 	/**
@@ -455,7 +447,6 @@ var ViewModel = function(){
 	 * Choose appropriate search method for places (by group, type or radius)
 	 */
 	self.fetchPlaceDetails = function(){
-		//self.showSavedGroupOverlay(false);
 		map.controls[google.maps.ControlPosition.LEFT_TOP].clear(getSavedOverlay);
 		self.removeExisitingPlaces();
 		self.saveButton(false);
@@ -477,10 +468,8 @@ var ViewModel = function(){
 			data.forEach(function(value){
 				self.listView.push(new Place(value.name, value.position, value.latitude, value.longitude, value.type, value.notes, value.address));
 				self.fitBoundsToVisibleMarkers();
-				//function(){
-					//var zoom = map.getZoom();
-					//map.setZoom(zoom > 15 ? 15 : zoom);
-				//});
+				var zoom = map.getZoom();
+					map.setZoom(zoom > 15 ? 15 : zoom);
 			});
 		}else{
 			alert("Error, no results found, please try again");
@@ -495,7 +484,6 @@ var ViewModel = function(){
 			contents = undefined;
 			infoWindow.setContent();
 		}
-		//self.showSavedGroupOverlay(false);
 		if(!self.showMenuList()){
 			map.controls[google.maps.ControlPosition.TOP_LEFT].clear(menu);
 			map.controls[google.maps.ControlPosition.TOP_CENTER].clear(input);
