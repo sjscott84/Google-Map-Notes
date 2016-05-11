@@ -8,6 +8,7 @@ var map,
 	testData,
 	placeObject = {},
 	pos,
+	getSavedOverlay = document.getElementById('getSaved'),
 	startPoint = {lat: 34.5133, lng: -94.1629},
 	radius = 2;
 
@@ -27,7 +28,7 @@ function initMap() {
 	map.controls[google.maps.ControlPosition.TOP_LEFT].push(menu);
 	map.controls[google.maps.ControlPosition.LEFT_CENTER].push(menuList);
 	map.controls[google.maps.ControlPosition.TOP_RIGHT].push(inputBox);
-	map.controls[google.maps.ControlPosition.LEFT_TOP].push(getSaved);
+	//map.controls[google.maps.ControlPosition.LEFT_TOP].push(getSaved);
 
 	// Try HTML5 geolocation.
 	geolocateLocation(function(){
@@ -124,7 +125,7 @@ var ViewModel = function(){
 
 	self.placeNote = ko.observable("");
 	self.showOverlay = ko.observable(false);
-	self.showSavedGroupOverlay = ko.observable(false);
+	//self.showSavedGroupOverlay = ko.observable(false);
 	self.saveButton = ko.observable(true);
 	self.removeButton = ko.observable(false);
 	self.placeName = ko.observable("");
@@ -282,7 +283,7 @@ var ViewModel = function(){
 
 		view.listView().forEach(function(place){
 			if(place.name === name){
-				contents = '<div class="infowindow"<b>'+name+'</b><br>'+address+'<br><b>What: </b>'+type+'<br><b>Notes: </b>'+note+'<br><a onclick="view.openGoogleMap()">View on google maps</a></div>';
+				contents = '<b>'+name+'</b><br>'+address+'<br><b>What: </b>'+type+'<br><b>Notes: </b>'+note+'<br><a onclick="view.openGoogleMap()">View on google maps</a>';
 				nameExists = true;
 			}
 		});
@@ -292,7 +293,6 @@ var ViewModel = function(){
 		}
 
 		infoWindow.setContent(contents);
-
 		infoWindow.open(map, marker);
 	};
 
@@ -369,7 +369,7 @@ var ViewModel = function(){
 		var data = {"group" : group, "type" : type};
 		$.ajax({
 			type:'GET',
-			url: '/readFile',
+			url: '/readFileForGroup',
 			data: data,
 		})
 		.done(function(data){
@@ -387,7 +387,7 @@ var ViewModel = function(){
 		var data = {"lat" : lat, "lng": lng, "distance": distance};
 		$.ajax({
 			type:'GET',
-			url: '/readFile',
+			url: '/readFileForRadius',
 			data: data,
 		})
 		.done(function(data){
@@ -432,9 +432,11 @@ var ViewModel = function(){
 	 * Open overlay to get saved places by group
 	 */
 	self.loadSavedPlacesByGroup = function(){
+		//var searchGroup = document.getElementById('getSaved');
 		self.removeExisitingPlaces();
 		//self.readFileByGroupAndType("SF", "Attraction", self.readFileCallBack);
-		self.showSavedGroupOverlay(true);
+		map.controls[google.maps.ControlPosition.LEFT_TOP].push(getSavedOverlay);
+		//self.showSavedGroupOverlay(true);
 	};
 
 	/**
@@ -453,7 +455,8 @@ var ViewModel = function(){
 	 * Choose appropriate search method for places (by group, type or radius)
 	 */
 	self.fetchPlaceDetails = function(){
-		self.showSavedGroupOverlay(false);
+		//self.showSavedGroupOverlay(false);
+		map.controls[google.maps.ControlPosition.LEFT_TOP].clear(getSavedOverlay);
 		self.removeExisitingPlaces();
 		self.saveButton(false);
 		self.removeButton(true);

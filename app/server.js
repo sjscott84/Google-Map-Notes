@@ -7,6 +7,7 @@ var cors = require('cors');
 var app = express();
 var bodyParser = require('body-parser');
 var path    = require("path");
+var noCache = require('connect-nocache');
 
 //var parseUrlencoded = bodyParser.urlencoded({extended: false});
 app.use(bodyParser.json());
@@ -20,7 +21,7 @@ app.options('*', cors());
 //app.use(express.static(path.join(__dirname, '/html')));
 // routes to serve the static HTML files
 app.use(express.static('public'));
-app.get('/', function(req, res) {
+app.get('/', noCache, function(req, res) {
 	//app.use(express.static('js'));
     res.sendFile(__dirname + '/index.html');
 });
@@ -59,13 +60,10 @@ app.get('/pageSetUp', function(request, response){
 	});
 })
 
-app.get('/readFile', function(request, response){
+app.get('/readFileForGroup', function(request, response){
 
-	var lat = request.query.lat;
-	var lng = request.query.lng;
 	var group = request.query.group;
 	var type = request.query.type;
-	var radius = request.query.distance;
 	var returnedPlaces = [];
 
 	fs.readFile(file, 'utf8', function(err, data){
@@ -73,21 +71,9 @@ app.get('/readFile', function(request, response){
 			console.log(err);
 		}else{
 			var parsedData = JSON.parse(data);
-			var minMax = findLocationsBasedOnRadius(lat, lng, radius);
 			var place = parsedData.places;
 
-			if(!group && !type){
-				for(var i = 0; i<place.length; i++){
-					if(place[i]["latitude"] > minMax.minLat && place[i]["latitude"] < minMax.maxLat && place[i]["longitude"] > minMax.minLng && place[i]["longitude"] < minMax.maxLng){
-						//calculate distance from start point to saved location
-						var resultDistance = calculateDistance(lat, place[i]["latitude"], lng, place[i]["longitude"]);
-							if(resultDistance < radius){
-								returnedPlaces.push(place[i]);
-							}
-						//returnedPlaces.push(parsedData.places[i]);
-					}
-				}
-			}else if(group === "All" && type === "All"){
+			if(group === "All" && type === "All"){
 				for(var i = 0; i<place.length; i++){
 					returnedPlaces.push(place[i]);
 				}
@@ -112,6 +98,35 @@ app.get('/readFile', function(request, response){
 			}
 			response.send(JSON.stringify(returnedPlaces));
 		}
+	});
+});
+
+app.get('/readFileForRadius', function(request, response){
+	var lat = request.query.lat;
+	var lng = request.query.lng;
+	var radius = request.query.distance;
+	var returnedPlaces = [];
+
+	fs.readFile(file, 'utf8', function(err, data){
+		if(err){
+			console.log(err);
+		}else{
+			var parsedData = JSON.parse(data);
+			var minMax = findLocationsBasedOnRadius(lat, lng, radius);
+			var place = parsedData.places;
+
+			for(var i = 0; i<place.length; i++){
+				if(place[i]["latitude"] > minMax.minLat && place[i]["latitude"] < minMax.maxLat && place[i]["longitude"] > minMax.minLng && place[i]["longitude"] < minMax.maxLng){
+					//calculate distance from start point to saved location
+					var resultDistance = calculateDistance(lat, place[i]["latitude"], lng, place[i]["longitude"]);
+						if(resultDistance < radius){
+							returnedPlaces.push(place[i]);
+						}
+					//returnedPlaces.push(parsedData.places[i]);
+				}
+			}
+		}
+		response.send(JSON.stringify(returnedPlaces));
 	});
 });
 
