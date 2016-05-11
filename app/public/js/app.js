@@ -20,7 +20,8 @@ function initMap() {
 		center: startPoint,
 		zoom: 2,
 		disableDefaultUI: true,
-		zoomControl: true
+		zoomControl: true,
+		mapTypeId: google.maps.MapTypeId.ROADMAP
 	});
 
 	view.addSearch();
@@ -281,13 +282,13 @@ var ViewModel = function(){
 
 		view.listView().forEach(function(place){
 			if(place.name === name){
-				contents = '<b>'+name+'</b><br>'+address+'<br><b>What: </b>'+type+'<br><b>Notes: </b>'+note+'<br><a onclick="view.openGoogleMap()">View on google maps</a>';
+				contents = '<div class="infowindow"><b>'+name+'</b><br>'+address+'<br><b>What: </b>'+type+'<br><b>Notes: </b>'+note+'<br><a onclick="view.openGoogleMap()">View on google maps</a></div>';
 				nameExists = true;
 			}
 		});
 
 		if(!nameExists){
-			contents = '<b>'+name+'</b><br>'+address+'<br><span><button class="myButton" id="leftButton" type="button" onclick="view.saveThisPlace()">Save Place</button><button class="myButton" id="rightButton" type="button" onclick="view.removeThisPlace()">Remove Place</button></span>';
+			contents = '<div class="infowindow"><b>'+name+'</b><br>'+address+'<br><span><button class="myButton" id="leftButton" type="button" onclick="view.saveThisPlace()">Save Place</button><button class="myButton" id="rightButton" type="button" onclick="view.removeThisPlace()">Remove Place</button></span></div>';
 		}
 
 		infoWindow.setContent(contents);
