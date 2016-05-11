@@ -348,7 +348,7 @@ var ViewModel = function(){
 	self.writeFile = function(callback){
 		$.ajax({
 			type: 'POST',
-			url: 'http://192.168.0.2:3000/writeFile',
+			url: 'http://50.131.162.46:3000/writeFile',
 			data: JSON.stringify(placeObject),
 			contentType: "application/json; charset=utf-8"
 		})
@@ -368,7 +368,7 @@ var ViewModel = function(){
 		var data = {"group" : group, "type" : type};
 		$.ajax({
 			type:'GET',
-			url: 'http://192.168.0.2:3000/readFileForGroup',
+			url: 'http://50.131.162.46:3000/readFileForGroup',
 			data: data,
 		})
 		.done(function(data){
@@ -386,7 +386,7 @@ var ViewModel = function(){
 		var data = {"lat" : lat, "lng": lng, "distance": distance};
 		$.ajax({
 			type:'GET',
-			url: 'http://192.168.0.2:3000/readFileForRadius',
+			url: 'http://50.131.162.46:3000/readFileForRadius',
 			data: data,
 		})
 		.done(function(data){
@@ -403,7 +403,7 @@ var ViewModel = function(){
 	self.pageSetUp = function(callback){
 		$.ajax({
 			type:'GET',
-			url: 'http://192.168.0.2:3000/pageSetUp',
+			url: 'http://50.131.162.46:3000/pageSetUp',
 		})
 		.done(function(data){
 			callback(JSON.parse(data));
